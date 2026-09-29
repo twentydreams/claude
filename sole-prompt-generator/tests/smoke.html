@@ -181,6 +181,58 @@ function runTests() {
 		return text.indexOf('Jhumka earrings with a domed bell and tiny drops in mint (#98E2C6) acrylic.') > -1;
 	});
 
+	check('selfie: the realism stack is in the prompt by default', function () {
+		open('selfie');
+		var text = preview();
+		back();
+		return text.indexOf('not feel even 1% AI-generated') > -1 &&
+			text.indexOf('Identity lock (this is me, not a lookalike)') > -1 &&
+			text.indexOf('Skin (the single most important thing in this photo)') > -1 &&
+			text.indexOf('Eyes, brows and lashes') > -1 &&
+			text.indexOf('Clothing realism') > -1 &&
+			text.indexOf('Final check before you output') > -1;
+	});
+
+	check('selfie: photorealism can be switched off', function () {
+		open('selfie');
+		form().querySelector('input[name="realism"][value="false"]').click();
+		var text = preview();
+		form().querySelector('input[name="realism"][value="true"]').click();
+		back();
+		return text.indexOf('Identity lock') === -1 && text.length > 500;
+	});
+
+	check('selfie: the eyes are blue by default and follow the dropdown', function () {
+		open('selfie');
+		var blue = preview().indexOf('my eyes are a believable natural blue') > -1;
+		setField('eyeColor', 'a slight green, subtle rather than vivid', 'change');
+		var green = preview().indexOf('my eyes are a slight green') > -1;
+		setField('eyeColor', form().elements.eyeColor.options[0].value, 'change');
+		back();
+		return blue && green;
+	});
+
+	check('selfie: kajal and mascara follow their checkbox', function () {
+		open('selfie');
+		var on = preview().indexOf('soft kajal on the waterline') > -1;
+		var box = form().elements.eyeMakeup;
+		box.checked = false;
+		box.dispatchEvent(new Event('change', { bubbles: true }));
+		var off = preview().indexOf('kajal') === -1;
+		box.checked = true;
+		box.dispatchEvent(new Event('change', { bubbles: true }));
+		back();
+		return on && off;
+	});
+
+	check('selfie: the skin is never allowed to be bleached white', function () {
+		open('selfie');
+		var text = preview();
+		back();
+		return text.indexOf('Never make me pale, porcelain, bleached or ultra-white') > -1 &&
+			text.indexOf('peach fuzz') > -1 && text.indexOf('T-zone') > -1;
+	});
+
 	check('every generator offers a camera reset', function () {
 		var all = ['sole', 'hand', 'feet', 'selfie', 'quote'].every(function (id) {
 			open(id);

@@ -2483,6 +2483,88 @@
 		['peace', 'Peace sign by my face', 'a casual peace sign next to my face']
 	];
 
+	/* ------------------------------------------------------------------ *
+	 * Realism blocks
+	 *
+	 * The selfie has one job: come back looking like a real photo off a
+	 * real phone. Everything below is written as plain instructions to the
+	 * image model, in the order it tends to get things wrong — identity,
+	 * face shape, skin, eyes, fabric, camera, and a last "look again"
+	 * pass that names the tells that give an AI image away.
+	 * ------------------------------------------------------------------ */
+
+	/* Eye colour. [phrase, label] — reads after "my eyes are …". */
+	var EYE_COLORS = [
+		{ group: 'Blue', items: [
+			['a believable natural blue \u2014 a mid-tone denim blue with a darker outer ring and flecks of grey, the way real blue eyes look in daylight rather than a bright glowing contact-lens blue', 'Natural blue'],
+			['a soft light icy blue with a pale centre and a distinctly darker limbal ring, still clearly a real human eye colour', 'Light icy blue'],
+			['a deep steel blue that reads almost grey-blue in indoor light', 'Deep steel blue'],
+			['a blue-grey that shifts between blue and grey depending on the light', 'Blue-grey']
+		] },
+		{ group: 'Green & hazel', items: [
+			['a slight green, subtle rather than vivid', 'Slight green'],
+			['a soft hazel with green and warm brown mixed through the iris', 'Soft hazel']
+		] },
+		{ group: 'Brown', items: [
+			['a warm light brown with golden flecks near the pupil', 'Warm light brown'],
+			['a deep natural dark brown with visible iris texture in the light', 'Deep dark brown']
+		] },
+		{ group: 'Other', items: [
+			['match', 'Same as my reference image'],
+			['custom', 'Custom\u2026 (type your own)']
+		] }
+	];
+
+	/* Skin tone. [phrase, label] — a full sentence dropped into the skin block. */
+	var SKIN_TONES = [
+		{ group: 'From my photo', items: [
+			['Keep exactly the skin tone I have in my reference image \u2014 the same depth and the same undertone, neither lighter nor darker, never brightened or whitened.', 'Same as my reference image']
+		] },
+		{ group: 'Warm tones', items: [
+			['My skin is fair with warm golden undertones \u2014 still obviously real human skin with colour in it, never bleached or porcelain white.', 'Fair, warm golden'],
+			['My skin is a light wheatish tone with warm yellow-golden undertones.', 'Light wheatish'],
+			['My skin is a medium wheatish tone with warm golden-olive undertones.', 'Medium wheatish'],
+			['My skin is a warm golden tan with visible sun warmth across my nose and cheeks.', 'Golden tan'],
+			['My skin is a deep warm brown with rich golden undertones and a healthy natural sheen.', 'Deep warm brown']
+		] },
+		{ group: 'Neutral & cool', items: [
+			['My skin is light with neutral undertones and a faint natural pink flush across the cheeks and nose.', 'Light neutral'],
+			['My skin is light-medium with cool rosy undertones, still warm enough to look alive rather than grey.', 'Light, cool rosy']
+		] },
+		{ group: 'Other', items: [
+			['custom', 'Custom\u2026 (type your own)']
+		] }
+	];
+
+	/* Wakes the model up before it starts: this is a photorealism task. */
+	var SELFIE_REALISM_HEADER = 'Before you generate anything, stop and read every instruction in this prompt, then follow all of them at once. This is a photorealism task, not an illustration or a render. You are producing one single image that has to be completely believable as a real photograph of a real person, taken on a real iPhone, in the real world. Not 95% believable \u2014 it must not feel even 1% AI-generated to someone scrolling past it in a camera roll. Every instruction below is a hard requirement, not a suggestion.';
+
+	var SELFIE_IDENTITY_LOCK = 'Identity lock (this is me, not a lookalike): The face in the photo is my real face exactly as in my reference image \u2014 the same bone structure, face shape and jawline, the same eye shape and spacing, the same nose, the same lip shape, the same hairline and the same skin tone. Anyone who knows me has to recognise me instantly, at a glance. Do not beautify me into a generic model face, do not slim, sharpen or reshape my features, do not change my ethnicity, and do not drift towards the averaged \u201cAI girl\u201d face. Keep my natural asymmetry: one eye set slightly differently from the other, one eyebrow a little higher, a mouth that is not perfectly even, one side of my face catching the light differently.';
+
+	var SELFIE_FACE_LOCK = 'Feminine, cute face shaping (subtle \u2014 real, never plastic): Keep the overall look soft, young and feminine. Soft face framing, with hair falling naturally over the sides of my forehead and a few strands crossing it, so less forehead is on show. A rounded, gently tapered jaw and a soft chin. Soft youthful cheeks with natural fullness on the apples. A refined, small, naturally feminine nose with a soft rounded tip, a gentle bridge and realistic nostril shape \u2014 real nose anatomy, never a filter-slimmed or digitally sharpened nose. Cute, softly full lips with a clearly shaped but natural cupid\u2019s bow, a slightly fuller lower lip, fine vertical lip lines, a soft natural lip edge that blends into the skin instead of a drawn-on outline, and a little natural moisture where the light hits. All of this stays inside what a real human face can look like: no doll proportions, no enlarged anime eyes, no shrunken filter chin.';
+
+	function eyeDetailText(s, makeup) {
+		var t = 'Eyes, brows and lashes (photographed detail, not painted): My eyes are ' + eyePhrase(s) + '. ' +
+			'The irises show real structure \u2014 fine radial fibres, slightly uneven pigment, a visibly darker limbal ring at the outer edge, a soft pupil edge, and a small catchlight whose shape matches the actual light source in the room. Never a glowing iris, never a painted-on sparkle, and the two eyes are never identical copies of each other. The whites of my eyes are softly off-white with faint natural vessels and a little shadow from the upper lid, never pure clinical white. ' +
+			'Thick, full, beautiful eyebrows built from individual visible hairs growing in their natural direction, slightly different from each other, denser at the inner end and softly tapering out, with real edges rather than a sharp filled-in block. ' +
+			'Naturally long, dark, dense eyelashes of varying lengths that curve realistically, separate into small natural clusters, cast fine shadows on the skin, and are visible as individual lashes on the lower lash line too \u2014 never a solid painted lash line, never a repeated identical lash pattern.';
+		if (makeup) {
+			t += ' Everyday eye makeup: soft kajal on the waterline and along the upper lash line, slightly smudged and a little imperfect the way real kajal wears through the day, plus a thin coat of mascara with visible texture and a couple of lashes naturally clumped together. Brows softly groomed and lightly filled but still unmistakably real hair. Nothing graphic, nothing airbrushed.';
+		}
+		return t;
+	}
+
+	function skinText(s) {
+		return 'Skin (the single most important thing in this photo): My skin has to read as real human skin under a real camera, not as rendered or retouched skin. ' +
+			skinTonePhrase(s) + ' Never make me pale, porcelain, bleached or ultra-white, and never grey, flat or ashy. ' +
+			'Show real skin structure at close range: visible pores, larger across the nose and inner cheeks and finer on the forehead; fine peach fuzz catching the light along the jaw, the hairline and the upper lip; a subtle natural sheen on the T-zone with the rest of my face staying matte; faint under-eye shadows and the natural texture of the skin under the eyes; slightly uneven tone with natural warmth around the nose, cheeks, eyelids and ears; any small moles, freckles, marks or blemishes left exactly as they are, unretouched; and real subsurface light through the ears, the tip of the nose and the lips. ' +
+			'No smoothing, no airbrushing, no beauty filter, no skin-tone unification, no wax, plastic, porcelain or CGI sheen, no glow overlay.';
+	}
+
+	var SELFIE_FABRIC_LOCK = 'Clothing realism: The outfit is real fabric photographed under real light. The weave or knit is visible up close; the fabric falls with natural folds, creases and drape that follow my body and gravity; soft wrinkles gather where it bends at the elbows, waist and shoulders; seams, stitching, hems and edges are visible and correctly placed; there is slight everyday wear, a little pilling or a soft crease where a real garment would have it. The material behaves like itself \u2014 knit stretches and bunches, cotton creases, satin catches sharp narrow highlights, denim holds its shape. No painted-on clothing, no perfectly smooth CGI cloth, no impossible folds, no melted or disappearing seams.';
+
+	var SELFIE_ANTI_AI = 'Final check before you output \u2014 look at the image again as if you were a stranger: it has to be indistinguishable from an ordinary photograph taken by a real person on a real iPhone. If anything in it would read as AI-generated, fix it and generate again. Specifically: nothing waxy, smoothed, glowing, perfectly symmetrical or \u201ctoo perfect\u201d; the correct five fingers per hand with real joints; ears, earrings and jewellery shaped correctly and matching each other; hair as separate strands with a natural hairline and stray flyaways, never a fused helmet or hair floating free of the head; background objects solid and structurally sensible, with straight lines straight and no melted or duplicated shapes; no nonsense lettering on anything in the frame; reflections and shadows that follow one consistent light source. No watermark, caption, border, logo, frame or AI signature of any kind.';
+
 	var SELFIE_HAND_LOCK = 'Hand & nail realism (match my reference image): Every visible hand is my real hand exactly as in the reference image — slender, youthful, feminine fingers with my exceptionally long natural nails. Preserve the exact extreme length, thickness, natural growth direction, C-curve and shape of the nails from the reference; never shorten them or turn them into acrylics or press-ons. Exactly five fingers per hand with the thumb on the correct side, natural knuckle creases, soft skin with real pores, faint veins and freshly oiled cuticles. The long nails stay fully visible, stable and sharp with natural shadows; they never bend, break, clip through objects or get cut off by the frame edge.';
 
 	var SELFIE_MIRROR = 'Mirror selfie: This is a casual mirror selfie. I am holding a black iPhone 15 Pro (Black Titanium) in one hand in front of me, and the phone is visible in the mirror reflection with its triple-lens camera module facing the mirror. My fingers and long nails wrap naturally around the edges of the phone without covering the lenses. The reflection follows real mirror physics (correct left-right reversal, slight smudges or fingerprints on the glass, consistent lighting).';
@@ -2498,6 +2580,20 @@
 		return SELFIE_MIRROR + (shot === 'clear'
 			? ' It still reads as an ordinary real mirror selfie, not a staged or generated photo.'
 			: ' It still keeps the accidental, haphazard feel.');
+	}
+
+	function eyePhrase(s) {
+		if (s.eyeColor === 'match') return 'exactly the eye colour I have in my reference image';
+		if (s.eyeColor === 'custom') return s.eyeCustom.trim().replace(/[.\s]+$/, '') || 'a believable natural blue';
+		return s.eyeColor;
+	}
+
+	function skinTonePhrase(s) {
+		if (s.skinTone === 'custom') {
+			var t = s.skinCustom.trim();
+			return t ? cap(sentence(t)) : SKIN_TONES[0].items[0][0];
+		}
+		return s.skinTone || SKIN_TONES[0].items[0][0];
 	}
 
 	function hairPhrase(s) {
@@ -2525,7 +2621,7 @@
 	var SELFIE_CLEAR_MASTER = 'Please generate a photo of yourself that looks like an ordinary, clear photo taken on a modern phone camera — the kind a real person takes of themselves on a normal day and actually keeps. It is properly in focus on my face, well exposed and steady, with no motion blur and no accidental tilt, but it is still a casual everyday snapshot rather than a professional portrait or a staged photoshoot.';
 
 	/* Always added: the photo has to read as a real iPhone shot, never as AI. */
-	var SELFIE_IPHONE_LOCK = 'Shot on a real iPhone (this must not look AI-generated): This is an ordinary JPEG straight out of an iPhone camera roll — not a digital illustration, not a 3D render, not a stock photo and not a studio portrait. Reproduce how an iPhone actually captures a face: the slightly wide front-camera field of view with mild distortion near the edges, Smart HDR\u2019s fairly flat highlights and lifted shadows, natural to slightly cool white balance, a faint amount of luminance noise in the darker areas, and the light over-sharpening the phone applies by itself. Keep my skin exactly as real skin looks — visible pores, fine peach fuzz, faint under-eye shadows, slightly uneven tone, any small blemishes or marks left unretouched, a few stray flyaway hairs, and the natural asymmetry between the two sides of my face. No beauty filter, no skin smoothing, no airbrushing, no waxy or plastic skin, no artificial glow or bloom, no HDR halos, no heavy cinematic color grading, no studio lighting rig, no perfect symmetry, no glossy CGI sheen, and no added text, watermark, border or logo.';
+	var SELFIE_IPHONE_LOCK = 'Shot on a real iPhone (this must not look AI-generated): This is an ordinary JPEG straight out of an iPhone camera roll — not a digital illustration, not a 3D render, not a stock photo and not a studio portrait. Reproduce how an iPhone actually captures a face: the slightly wide front-camera field of view with mild distortion near the edges, Smart HDR\u2019s fairly flat highlights and lifted shadows, natural to slightly cool white balance, a faint amount of luminance noise in the darker areas, and the light over-sharpening the phone applies by itself. Keep my skin exactly as real skin looks — visible pores, fine peach fuzz, faint under-eye shadows, slightly uneven tone, any small blemishes or marks left unretouched, a few stray flyaway hairs, and the natural asymmetry between the two sides of my face. No beauty filter, no skin smoothing, no airbrushing, no waxy or plastic skin, no artificial glow or bloom, no HDR halos, no heavy cinematic color grading, no studio lighting rig, no perfect symmetry, no glossy CGI sheen, and no added text, watermark, border or logo. Match how the phone actually renders a scene: a natural handheld depth of field where my face is sharp and the background falls off softly and unevenly rather than into a perfect creamy blur, highlights that clip a little where a window or lamp is behind me, colour that shifts slightly towards whatever light is actually in the room, fine sensor noise and light JPEG compression visible in the shadows and flat areas, and a touch of chromatic fringing on the highest-contrast edges.';
 
 	var SELFIE_IPHONE_TAIL = {
 		clear: ' The photo itself is sharp and correctly exposed, but the framing stays a little imperfect and human, the way a real handheld shot is.',
@@ -2732,6 +2828,12 @@
 			ratio: '9:16',
 			address: 'chatgpt',
 			shot: 'accidental',
+			realism: true,
+			eyeColor: EYE_COLORS[0].items[0][0],
+			eyeCustom: '',
+			eyeMakeup: true,
+			skinTone: SKIN_TONES[0].items[0][0],
+			skinCustom: '',
 			hair: 'loose beach waves',
 			hairCustom: '',
 			lipOn: true,
@@ -2783,12 +2885,28 @@
 						['clear', 'Clear shot', 'In focus and well lit, still a real phone photo']
 					]) +
 					'<p class="spg-hint">A clear shot swaps the master prompt and adds a camera-realism block so the photo never looks AI-generated.</p>') +
+				card('Maximum photorealism',
+					showIf('realism=true',
+						'<p class="spg-hint">Adds the full realism stack: a wake-up line before the master prompt, an identity lock so you stay recognisable, soft feminine face shaping, real skin texture, eye/brow/lash detail, real fabric behaviour, and a final \u201clook again\u201d pass listing the things that give an AI photo away.</p>') +
+					showIf('realism=false',
+						'<p class="spg-hint">Only the basic camera block is added. Turn this on if the photo still looks AI-generated.</p>'),
+					yesNo('realism', s.realism)) +
 				card('Fixed by the master prompt',
-					showIf('shot=accidental', '<p class="spg-hint spg-fixed">Accidental, haphazard iPhone snapshot · motion blur, uneven light, mild overexposure, weird angle, cluttered frame · Long hair · Slight green eyes</p>') +
-					showIf('shot=clear', '<p class="spg-hint spg-fixed">Clear, well-exposed phone photo · sharp focus on my face · casual, not a photoshoot · real skin texture, no filter, no AI gloss · Long hair · Slight green eyes</p>')) +
+					showIf('shot=accidental', '<p class="spg-hint spg-fixed">Accidental, haphazard iPhone snapshot · motion blur, uneven light, mild overexposure, weird angle, cluttered frame · Long hair</p>') +
+					showIf('shot=clear', '<p class="spg-hint spg-fixed">Clear, well-exposed phone photo · sharp focus on my face · casual, not a photoshoot · real skin texture, no filter, no AI gloss · Long hair</p>')) +
 				card('Hairstyle',
 					select('hair', s.hair, HAIR_STYLES) +
 					showIf('hair=custom', '<div class="spg-field">' + textInput('hairCustom', s.hairCustom, 'e.g. a low twisted bun with face-framing strands') + '</div>')) +
+				card('Eyes',
+					'<div class="spg-field">' + sub('Eye color') +
+					select('eyeColor', s.eyeColor, selectGroups(EYE_COLORS)) + '</div>' +
+					showIf('eyeColor=custom', '<div class="spg-field">' + textInput('eyeCustom', s.eyeCustom, 'e.g. a soft grey-blue with a dark outer ring') + '</div>') +
+					check('eyeMakeup', s.eyeMakeup, 'Kajal, subtle mascara texture and softly enhanced brows') +
+					'<p class="spg-hint">Thick natural brows, long separated lashes and real iris detail are described automatically when photorealism is on.</p>') +
+				card('Skin tone',
+					select('skinTone', s.skinTone, selectGroups(SKIN_TONES)) +
+					showIf('skinTone=custom', '<div class="spg-field">' + textInput('skinCustom', s.skinCustom, 'e.g. my skin is light wheatish with warm peach undertones') + '</div>') +
+					'<p class="spg-hint">The prompt always forbids bleached, porcelain or ultra-white skin and asks for pores, peach fuzz and a soft T-zone sheen.</p>') +
 				card('Lipstick',
 					showIf('lipOn=true',
 						colorPicker(s, '#E8829A', LIP_PALETTE, 'lip', 'Lipstick shade') +
@@ -2887,7 +3005,8 @@
 		build: function (s) {
 			var addr = { chatgpt: 'ChatGPT, ', gemini: 'Gemini, ', none: '' }[s.address] || '';
 			var master = s.shot === 'clear' ? SELFIE_CLEAR_MASTER : SELFIE_MASTER;
-			var intro = addr + master + ' I have long hair, ' + hairPhrase(s) + ', and my eyes are a slight green.';
+			var head = s.realism ? SELFIE_REALISM_HEADER + ' ' : '';
+			var intro = addr + head + master + ' I have long hair, ' + hairPhrase(s) + ', and my eyes are ' + eyePhrase(s) + '.';
 
 			var lipHex = normalizeHex(s.lip) || '#E8829A';
 			var lipName = colorName(lipHex, LIP_PALETTE);
@@ -2929,6 +3048,13 @@
 				'* Pendant: ' + jewel(s.pendant, s.pendantText, s.pendantMatch, 'pendant', true),
 				'* Outfit: I\'m wearing ' + outfitPhrase(s) + '.'
 			];
+			if (s.realism) {
+				lines.push('* ' + SELFIE_IDENTITY_LOCK);
+				lines.push('* ' + SELFIE_FACE_LOCK);
+				lines.push('* ' + skinText(s));
+				lines.push('* ' + eyeDetailText(s, s.eyeMakeup));
+				lines.push('* ' + SELFIE_FABRIC_LOCK);
+			}
 			var smile = smilePhrase(s);
 			var expression = expressionPhrase(s);
 			var camera = cameraLine(s);
@@ -2950,6 +3076,7 @@
 			lines.push('* Background: ' + (cap(sentence(s.background)) ||
 				(s.shot === 'clear' ? 'An ordinary everyday place, nothing staged.' : 'An ordinary, cluttered everyday place.')));
 			lines.push('* ' + iphoneLock(s.shot));
+			if (s.realism) lines.push('* ' + SELFIE_ANTI_AI);
 			lines.push('* Aspect ratio: ' + (s.ratio === '9:16' ? '9:16 (vertical phone photo).' : '4:5.'));
 			return lines.join('\n');
 		},
@@ -2957,6 +3084,8 @@
 		warnings: function (s) {
 			var w = [];
 			if (s.hair === 'custom' && !s.hairCustom.trim()) w.push('Custom hairstyle is empty.');
+			if (s.eyeColor === 'custom' && !s.eyeCustom.trim()) w.push('Custom eye color is empty.');
+			if (s.skinTone === 'custom' && !s.skinCustom.trim()) w.push('Custom skin tone is empty.');
 			if (s.outfit === 'custom' && !s.outfitCustom.trim()) w.push('Custom outfit is empty.');
 			if (s.smile === 'custom' && !s.smileCustom.trim()) w.push('Custom smile is empty.');
 			if (s.expression === 'custom' && !s.expressionCustom.trim()) w.push('Custom face expression is empty.');
@@ -2970,7 +3099,9 @@
 				'Photo': s.shot === 'clear'
 					? 'Clear, well-exposed everyday phone selfie: sharp focus, natural light, real skin texture, no filter and nothing that looks AI-generated'
 					: 'Accidental, haphazard iPhone selfie: slight motion blur, uneven lighting, mild overexposure, weird angle, cluttered frame',
-				'Subject': 'Young woman, long hair ' + hairPhrase(s) + ', slight green eyes',
+				'Subject': 'Young woman, long hair ' + hairPhrase(s) + ', eyes ' + eyePhrase(s),
+				'Skin': skinTonePhrase(s),
+				'Realism': s.realism ? 'Maximum: identity lock, real skin texture, eye/brow/lash detail, real fabric, anti-AI final pass' : 'Basic camera block only',
 				'Outfit': outfitPhrase(s),
 				'Mirror selfie': s.mirror ? 'Yes: holding a black iPhone 15 Pro, visible in the mirror' : 'No: front-camera selfie',
 				'Hands': s.hands ? 'One hand with ' + spotText(s.handSpot) : 'Not visible',
@@ -2992,7 +3123,9 @@
 				shortLabel(CAM_PLACEMENTS, s.camPlacement, '')].filter(Boolean).join(', ');
 			var smile = shortLabel(SMILES, s.smile, s.smileCustom);
 			var expression = shortLabel(EXPRESSIONS, s.expression, s.expressionCustom);
-			return [s.shot === 'clear' ? 'Clear shot' : 'Accidental', hair, outfit, camera, gaze, smile, expression,
+			var eyes = s.eyeColor === 'custom' ? s.eyeCustom : shortLabel(EYE_COLORS, s.eyeColor, '') || 'Ref eyes';
+			return [s.shot === 'clear' ? 'Clear shot' : 'Accidental', s.realism ? 'Max realism' : '', hair, eyes, outfit,
+				camera, gaze, smile, expression,
 				s.mirror ? 'Mirror' : '', s.hands ? 'Hands' : '', s.ratio].filter(Boolean).join(' · ');
 		}
 	};
@@ -3893,7 +4026,13 @@
 		QUOTE_THUMB_LOCK: QUOTE_THUMB_LOCK,
 		QUOTE_PRINT_LOCK: QUOTE_PRINT_LOCK,
 		QUOTE_BOOK_LOCK: QUOTE_BOOK_LOCK,
-		QUOTE_BG_LOCK: QUOTE_BG_LOCK
+		QUOTE_BG_LOCK: QUOTE_BG_LOCK,
+		SELFIE_REALISM_HEADER: SELFIE_REALISM_HEADER,
+		SELFIE_IDENTITY_LOCK: SELFIE_IDENTITY_LOCK,
+		SELFIE_FACE_LOCK: SELFIE_FACE_LOCK,
+		SELFIE_FABRIC_LOCK: SELFIE_FABRIC_LOCK,
+		SELFIE_IPHONE_LOCK: SELFIE_IPHONE_LOCK,
+		SELFIE_ANTI_AI: SELFIE_ANTI_AI
 	};
 
 	(function applyBlockOverrides() {
@@ -3918,6 +4057,12 @@
 		if (has('QUOTE_PRINT_LOCK')) QUOTE_PRINT_LOCK = o.QUOTE_PRINT_LOCK;
 		if (has('QUOTE_BOOK_LOCK')) QUOTE_BOOK_LOCK = o.QUOTE_BOOK_LOCK;
 		if (has('QUOTE_BG_LOCK')) QUOTE_BG_LOCK = o.QUOTE_BG_LOCK;
+		if (has('SELFIE_REALISM_HEADER')) SELFIE_REALISM_HEADER = o.SELFIE_REALISM_HEADER;
+		if (has('SELFIE_IDENTITY_LOCK')) SELFIE_IDENTITY_LOCK = o.SELFIE_IDENTITY_LOCK;
+		if (has('SELFIE_FACE_LOCK')) SELFIE_FACE_LOCK = o.SELFIE_FACE_LOCK;
+		if (has('SELFIE_FABRIC_LOCK')) SELFIE_FABRIC_LOCK = o.SELFIE_FABRIC_LOCK;
+		if (has('SELFIE_IPHONE_LOCK')) SELFIE_IPHONE_LOCK = o.SELFIE_IPHONE_LOCK;
+		if (has('SELFIE_ANTI_AI')) SELFIE_ANTI_AI = o.SELFIE_ANTI_AI;
 	})();
 
 	var TOOLS = [SOLE, HAND, FEET, FEET_CAROUSEL, SELFIE, QUOTE];

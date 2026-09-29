@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Studio
  * Description:       Prompt Studio for Gemini: fill in only the variables of your master prompts (Sole, Hand, Feet, Selfie, Quote) and copy the complete prompt. Includes Groq-powered AI refine, per-user saved poses and setups, prompt history and editable master prompt blocks. Your saved data is never deleted, not even when the plugin is removed. Admin menu: Studio. Shortcode: [studio]
- * Version:           4.4.2
+ * Version:           4.5.0
  * Requires at least: 5.8
  * Requires PHP:      7.2
  * Author:            Studio
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SPG_VERSION', '4.4.2' );
+define( 'SPG_VERSION', '4.5.0' );
 define( 'SPG_URL', plugin_dir_url( __FILE__ ) );
 define( 'SPG_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SPG_GROQ_ENDPOINT', 'https://api.groq.com/openai/v1/chat/completions' );
@@ -394,6 +394,12 @@ function spg_block_keys() {
 		'QUOTE_PRINT_LOCK'        => __( 'Quote: typography lock (typeset, never handwritten)', 'sole-prompt-generator' ),
 		'QUOTE_BOOK_LOCK'         => __( 'Quote: book lock (paper, margins, page curvature)', 'sole-prompt-generator' ),
 		'QUOTE_BG_LOCK'           => __( 'Quote: clean, real, text-free background line', 'sole-prompt-generator' ),
+		'SELFIE_REALISM_HEADER'   => __( 'Selfie: photorealism wake-up line (opens the prompt)', 'sole-prompt-generator' ),
+		'SELFIE_IDENTITY_LOCK'    => __( 'Selfie: identity lock (stay recognisable, keep asymmetry)', 'sole-prompt-generator' ),
+		'SELFIE_FACE_LOCK'        => __( 'Selfie: feminine face shaping (forehead framing, lips, nose, cheeks)', 'sole-prompt-generator' ),
+		'SELFIE_FABRIC_LOCK'      => __( 'Selfie: clothing realism (fabric texture, folds, seams)', 'sole-prompt-generator' ),
+		'SELFIE_IPHONE_LOCK'      => __( 'Selfie: iPhone camera & sensor realism', 'sole-prompt-generator' ),
+		'SELFIE_ANTI_AI'          => __( 'Selfie: final "look again" anti-AI pass', 'sole-prompt-generator' ),
 	);
 }
 
