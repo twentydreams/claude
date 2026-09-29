@@ -1,0 +1,3 @@
+# Built plugin archives — regenerate with:
+#   zip -qr studio-plugin-v<version>.zip sole-prompt-generator
+studio-plugin-*.zip
