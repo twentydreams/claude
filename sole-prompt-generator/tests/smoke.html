@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio — smoke tests</title>
+<link rel="stylesheet" href="../assets/css/spg.css">
+<style>
+	body { font: 15px/1.6 system-ui, sans-serif; margin: 24px; max-width: 900px; }
+	h1 { font-size: 20px; }
+	#summary { padding: 10px 14px; border-radius: 10px; font-weight: 700; margin: 12px 0 20px; }
+	.ok { background: #E7F6EC; color: #14532D; }
+	.bad { background: #FDE8E8; color: #7F1D1D; }
+	li { margin: 2px 0; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; }
+	li.pass::before { content: "PASS  "; color: #15803D; }
+	li.fail::before { content: "FAIL  "; color: #B91C1C; }
+	#stage { position: absolute; left: -10000px; top: 0; width: 1200px; }
+</style>
+</head>
+<body>
+
+<h1>Studio — smoke tests</h1>
+<p>Open this file from the plugin folder after any change to <code>spg.js</code>. It mounts every generator in a hidden stage and checks that the prompts still build.</p>
+<div id="summary">Running…</div>
+<ul id="results"></ul>
+
+<div id="stage"><div class="spg-root"></div></div>
+
+<script src="../assets/js/spg.js"></script>
+<script>
+function runTests() {
+	/* Start from the defaults: saved state from real use must not steer a test. */
+	try {
+		Object.keys(localStorage).forEach(function (k) {
+			if (k.indexOf('spg_') === 0) localStorage.removeItem(k);
+		});
+	} catch (e) { /* private mode: carry on */ }
+
+	var results = document.getElementById('results');
+	var pass = 0, fail = 0;
+
+	function check(name, fn) {
+		var ok = false, detail = '';
+		try { ok = fn() === true; }
+		catch (e) { detail = ' — ' + e.message; }
+		var li = document.createElement('li');
+		li.className = ok ? 'pass' : 'fail';
+		li.textContent = name + detail;
+		results.appendChild(li);
+		ok ? pass++ : fail++;
+	}
+
+	var root = document.querySelector('.spg-root');
+	function open(id) { root.querySelector('[data-open="' + id + '"]').click(); }
+	function back() { root.querySelector('[data-back]').click(); }
+	function form() { return root.querySelector('.spg-form'); }
+	function preview() { return root.querySelector('[data-preview]').textContent; }
+	function setField(name, value, type) {
+		var el = form().elements[name];
+		el.value = value;
+		el.dispatchEvent(new Event(type || 'input', { bubbles: true }));
+	}
+
+	check('SPG is exported', function () { return !!(window.SPG && window.SPG.tools.length === 6); });
+	check('built-in blocks are exported for the settings screen', function () {
+		return !!(window.SPG.blocks && window.SPG.blocks.SOLE_ANATOMY_LOCK && window.SPG.blocks.HAND_PART_1);
+	});
+
+	['sole', 'hand', 'feet', 'selfie', 'quote'].forEach(function (id) {
+		check(id + ': builds a prompt', function () {
+			open(id);
+			var text = preview();
+			back();
+			return text.length > 500;
+		});
+	});
+
+	check('feet carousel: builds a prompt', function () {
+		open('feet');
+		root.querySelector('[data-mode="feet_carousel"]').click();
+		var text = preview();
+		back();
+		return text.length > 500;
+	});
+
+	check('sole: the anatomy lock is in every prompt', function () {
+		open('sole');
+		var text = preview();
+		back();
+		return text.indexOf('primary anatomical reference') > -1 && text.indexOf('completely new pose') > -1;
+	});
+
+	check('sole: the pose library holds 50 poses', function () {
+		open('sole');
+		var n = form().elements.posePick.options.length;
+		back();
+		return n === 51; /* 50 poses + "no preset pose" */
+	});
+
+	check('sole: picking a pose fills the pose box', function () {
+		open('sole');
+		setField('posePick', 'p18', 'change');
+		var v = form().elements.pose.value;
+		back();
+		return v.indexOf('sole-to-sole') > -1;
+	});
+
+	check('sole: outfit picks up its color', function () {
+		open('sole');
+		setField('outfitPick', 'the pleats and pallu of a saree draping down to the ankles', 'change');
+		setField('outfitColor', '#1E4FD8');
+		var text = preview();
+		back();
+		return text.indexOf('saree draping down to the ankles in cobalt (#1E4FD8)') > -1;
+	});
+
+	check('hand: quick pose sets both the text and the hand', function () {
+		open('hand');
+		root.querySelector('[data-preset="left"]').click();
+		var ok = form().elements.hand.value === 'left' && form().elements.pose.value.indexOf('my left hand') > -1;
+		back();
+		return ok;
+	});
+
+	check('hand: the pose library holds 50 poses', function () {
+		open('hand');
+		var n = form().elements.posePick.options.length;
+		back();
+		return n === 51;
+	});
+
+	check('hand: picking a pose fills the box and keeps it prop-free', function () {
+		open('hand');
+		setField('posePick', 'h27', 'change');
+		var v = form().elements.pose.value;
+		back();
+		return v.indexOf('index finger') > -1 && !/cup|table|wall|window|phone|car|floor/i.test(v);
+	});
+
+	check('hand: a both-hands pose switches the hand selection', function () {
+		open('hand');
+		root.querySelector('[data-preset="right"]').click();
+		setField('posePick', 'b04', 'change');
+		var ok = form().elements.hand.value === 'both';
+		back();
+		return ok;
+	});
+
+	check('hand: accessories carry their metal', function () {
+		open('hand');
+		setField('acc1Pick', 'a thin plain band on the ring finger', 'change');
+		var text = preview();
+		back();
+		return text.indexOf('thin plain band on the ring finger in yellow gold') > -1;
+	});
+
+	check('feet: the stance field reaches the prompt', function () {
+		open('feet');
+		setField('pose', 'I am standing with my weight on my left foot');
+		var text = preview();
+		back();
+		return text.indexOf('Stance: I am standing with my weight on my left foot.') > -1;
+	});
+
+	check('feet: clothing picks up its color', function () {
+		open('feet');
+		setField('clothingPick', 'a pair of cuffed jeans', 'change');
+		setField('clothingPick', 'a pair of slim-fit jeans cuffed once above the ankle', 'change');
+		var text = preview();
+		back();
+		return text.indexOf('A glimpse of a pair of slim-fit jeans cuffed once above the ankle in') > -1;
+	});
+
+	check('selfie: earrings combine style and material', function () {
+		open('selfie');
+		setField('earringPick', 'jhumka earrings with a domed bell and tiny drops', 'change');
+		setField('earringMaterial', 'acrylic', 'change');
+		setField('earringColor', '#98E2C6');
+		var text = preview();
+		back();
+		return text.indexOf('Jhumka earrings with a domed bell and tiny drops in mint (#98E2C6) acrylic.') > -1;
+	});
+
+	check('every generator offers a camera reset', function () {
+		var all = ['sole', 'hand', 'feet', 'selfie', 'quote'].every(function (id) {
+			open(id);
+			var has = !!root.querySelector('[data-reset-cam]');
+			back();
+			return has;
+		});
+		return all;
+	});
+
+	check('camera reset clears the dropdowns', function () {
+		open('sole');
+		var sel = form().elements.camHeight;
+		setField('camHeight', sel.options[1].value, 'change');
+		var before = preview();
+		root.querySelector('[data-reset-cam]').click();
+		var after = preview();
+		var cleared = form().elements.camHeight.value === '';
+		back();
+		return before !== after && cleared;
+	});
+
+	check('quote: only the thumb, and it never covers a word', function () {
+		open('quote');
+		var text = preview();
+		back();
+		return text.indexOf('Only my thumb is visible') > -1 &&
+			text.indexOf('never overlap, cover, shadow out or hide a single printed word') > -1 &&
+			text.indexOf('Exactly one nail is visible') > -1;
+	});
+
+	check('quote: the typography and book locks are always sent', function () {
+		open('quote');
+		var text = preview();
+		back();
+		return text.indexOf('[TYPOGRAPHY LOCK]') > -1 && text.indexOf('[BOOK LOCK]') > -1 &&
+			text.indexOf('absolutely no handwriting') > -1;
+	});
+
+	check('quote: the background can never carry text', function () {
+		open('quote');
+		var text = preview();
+		back();
+		return text.indexOf('no writing of any kind anywhere in the background') > -1;
+	});
+
+	check('quote: the quote text reaches the page verbatim', function () {
+		open('quote');
+		var twoLines = 'Line one.' + String.fromCharCode(10) + 'Line two.';
+		setField('quote', twoLines);
+		var text = preview();
+		back();
+		return text.indexOf(twoLines) > -1 && text.indexOf('Print nothing else anywhere on the page') > -1;
+	});
+
+	check('quote: my quote library is in the dropdown', function () {
+		open('quote');
+		var n = form().elements.quotePick.options.length;
+		back();
+		return n === 41; /* 40 quotes + "no preset" */
+	});
+
+	check('quote: picking a quote fills the heading and the body', function () {
+		open('quote');
+		setField('quotePick', 'n04', 'change');
+		var head = form().elements.heading.value;
+		var body = form().elements.quote.value;
+		var text = preview();
+		back();
+		return head === 'Drafts' && body.indexOf('most honest thing') > -1 && text.indexOf('Drafts') > -1;
+	});
+
+	check('quote: every library entry has a heading and a body', function () {
+		var quote = window.SPG.tools.filter(function (t) { return t.id === 'quote'; })[0];
+		var ids = [];
+		open('quote');
+		Array.prototype.forEach.call(form().elements.quotePick.options, function (o) { if (o.value) ids.push(o.value); });
+		var ok = ids.every(function (id) {
+			setField('quotePick', id, 'change');
+			return form().elements.heading.value.length > 2 && form().elements.quote.value.length > 15;
+		});
+		back();
+		return ok && ids.length === 40 && !!quote;
+	});
+
+	check('quote: the AI writer has its own panel', function () {
+		open('quote');
+		var panel = root.querySelector('[data-kind="quote_write"]');
+		var title = panel && panel.querySelector('.spg-ai-title').textContent;
+		back();
+		return title === 'Quote writer';
+	});
+
+	check('quote: my handle is printed by default, in a fixed place', function () {
+		open('quote');
+		var text = preview();
+		back();
+		return text.indexOf('@shatania.veyra') > -1 &&
+			text.indexOf('[SIGNATURE LOCK]') > -1 &&
+			text.indexOf('this exact position at this exact size in every image') > -1;
+	});
+
+	check('quote: the handle can be turned off', function () {
+		open('quote');
+		var off = form().querySelector('[name="handleOn"][value="false"]');
+		off.checked = true;
+		off.dispatchEvent(new Event('change', { bubbles: true }));
+		var gone = preview().indexOf('@shatania.veyra') < 0;
+		back();
+		return gone;
+	});
+
+	check('quote: the date is gone for good', function () {
+		var quote = window.SPG.tools.filter(function (t) { return t.id === 'quote'; })[0];
+		var keys = Object.keys(quote.defaults).join(' ');
+		return keys.indexOf('date') < 0 && quote.build(quote.defaults).indexOf('Date:') < 0;
+	});
+
+	check('quote: holds and backgrounds are both wide lists', function () {
+		open('quote');
+		var holds = form().elements.hold.options.length;
+		var bgs = form().elements.background.options.length;
+		back();
+		return holds >= 18 && bgs >= 20;
+	});
+
+	check('quote: imperfections are listed only when ticked', function () {
+		open('quote');
+		var on = preview().indexOf('Deliberate real-life imperfections') > -1;
+		['flawSmudge', 'flawUneven', 'flawDust', 'flawRidge', 'flawPaper'].forEach(function (k) {
+			var c = form().elements[k];
+			c.checked = false;
+			c.dispatchEvent(new Event('change', { bubbles: true }));
+		});
+		var off = preview().indexOf('Deliberate real-life imperfections') < 0;
+		back();
+		return on && off;
+	});
+
+	check('quote: the chosen typeface is described, not just named', function () {
+		open('quote');
+		var text = preview();
+		back();
+		return text.indexOf('EB Garamond') > -1 && text.indexOf('bracketed serifs') > -1;
+	});
+
+	check('quote: page furniture only prints when it is on', function () {
+		open('quote');
+		var before = preview().indexOf('running head') < 0;
+		var c = form().elements.chapterOn;
+		var yes = form().querySelector('[name="chapterOn"][value="true"]');
+		yes.checked = true;
+		yes.dispatchEvent(new Event('change', { bubbles: true }));
+		var after = preview().indexOf('running head') > -1;
+		back();
+		return before && after && !!c;
+	});
+
+	check('quote: the default ratio is 9:16', function () {
+		var quote = window.SPG.tools.filter(function (t) { return t.id === 'quote'; })[0];
+		return quote.defaults.ratio === '9:16' && quote.build(quote.defaults).indexOf('Output Ratio: 9:16') > -1;
+	});
+
+	check('the counter reports characters and tokens', function () {
+		open('sole');
+		var t = root.querySelector('[data-count]').textContent;
+		back();
+		return /characters/.test(t) && /tokens/.test(t);
+	});
+
+	check('every field of every generator survives a round trip', function () {
+		return window.SPG.tools.every(function (tool) {
+			var s = JSON.parse(JSON.stringify(tool.defaults));
+			var text = tool.build(s);
+			return typeof text === 'string' && text.length > 200 && text.indexOf('undefined') < 0;
+		});
+	});
+
+	check('warnings are arrays of strings', function () {
+		return window.SPG.tools.every(function (tool) {
+			var w = tool.warnings(JSON.parse(JSON.stringify(tool.defaults)));
+			return Array.isArray(w) && w.every(function (x) { return typeof x === 'string'; });
+		});
+	});
+
+	var box = document.getElementById('summary');
+	box.className = fail ? 'bad' : 'ok';
+	box.textContent = fail ? (fail + ' failed, ' + pass + ' passed') : ('All ' + pass + ' checks passed');
+	window.SPG_TEST = { pass: pass, fail: fail };
+}
+
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', function () { setTimeout(runTests, 0); });
+} else {
+	setTimeout(runTests, 0);
+}
+</script>
+</body>
+</html>

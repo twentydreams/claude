@@ -1,0 +1,1808 @@
+/* Sole Prompt Generator — scoped styles
+ *
+ * Retuned to the Archive design system: #08080A ground, #F5F5F7 /
+ * #A1A1A6 / #6E6E73 type, hairlines at 8.5% white, 18px cards, Inter
+ * tracked tight, and the coral-to-amber gradient kept for the one
+ * action that matters on each screen.
+ *
+ * The structure below is unchanged — only the tokens moved, so every
+ * rule that already reads from them followed automatically. The places
+ * where a light value was hardcoded are corrected in the "Archive
+ * system" block at the end of this file rather than in place, so the
+ * change stays reviewable.
+ */
+.spg-root {
+	--spg-bg: #08080a;
+	--spg-panel: #131215;
+	--spg-ink: #f5f5f7;
+	--spg-muted: #a1a1a6;
+	--spg-faint: #6e6e73;
+	--spg-line: rgba(255, 255, 255, 0.085);
+	--spg-line-2: rgba(255, 255, 255, 0.14);
+	--spg-surface: rgba(255, 255, 255, 0.045);
+	--spg-surface-2: rgba(255, 255, 255, 0.08);
+	--spg-accent: #ff7e6b;
+	--spg-accent-ink: #140709;
+	--spg-grad: linear-gradient(135deg, #ff5f7e 0%, #ff7e6b 52%, #ffa05c 100%);
+	--spg-soft: rgba(255, 255, 255, 0.06);
+	--spg-ok: #4fd1a1;
+	--spg-err: #ff6b6b;
+	--spg-radius: 18px;
+	--spg-ease: cubic-bezier(0.22, 0.9, 0.32, 1);
+	--spg-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+	color: var(--spg-ink);
+	font-size: 15px;
+	line-height: 1.5;
+	letter-spacing: -0.01em;
+	-webkit-font-smoothing: antialiased;
+	color-scheme: dark;
+}
+
+.spg-root *,
+.spg-root *::before,
+.spg-root *::after { box-sizing: border-box; }
+
+.spg-root [hidden] { display: none !important; }
+
+.spg-app {
+	background: var(--spg-bg);
+	border: 1px solid var(--spg-line);
+	border-radius: 20px;
+	padding: 28px;
+	margin: 16px 0;
+}
+
+.spg-root h1, .spg-root h2, .spg-root h3, .spg-root legend {
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	color: var(--spg-ink);
+	margin: 0;
+	padding: 0;
+}
+
+.spg-header { margin-bottom: 22px; }
+.spg-eyebrow {
+	margin: 0 0 2px;
+	font-size: 12px;
+	letter-spacing: .12em;
+	text-transform: uppercase;
+	color: var(--spg-muted);
+	font-weight: 600;
+}
+.spg-title { font-size: 34px; font-weight: 700; line-height: 1.1; }
+.spg-lead { margin: 0 0 16px; color: var(--spg-muted); }
+
+/* Tiles */
+.spg-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.spg-tile {
+	all: unset;
+	box-sizing: border-box;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 22px;
+	background: var(--spg-panel);
+	border: 1px solid var(--spg-line);
+	border-radius: var(--spg-radius);
+	transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.spg-tile:hover, .spg-tile:focus-visible {
+	transform: translateY(-2px);
+	border-color: var(--spg-accent);
+	box-shadow: 0 10px 24px -14px rgba(11, 42, 140, .5);
+}
+.spg-tile-icon {
+	width: 52px; height: 52px;
+	display: grid; place-items: center;
+	border-radius: 12px;
+	background: var(--spg-soft);
+	color: var(--spg-accent);
+	margin-bottom: 6px;
+}
+.spg-tile-icon svg { width: 34px; height: 34px; }
+.spg-tile-name { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 24px; font-weight: 700; }
+.spg-tile-desc { color: var(--spg-muted); font-size: 13px; }
+
+/* Generator */
+.spg-gen-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 18px;
+}
+.spg-gen-title { font-size: 28px; font-weight: 700; }
+
+.spg-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+	gap: 20px;
+	align-items: start;
+}
+
+.spg-form { display: flex; flex-direction: column; gap: 14px; margin: 0; }
+
+.spg-card {
+	background: var(--spg-panel);
+	border: 1px solid var(--spg-line);
+	border-radius: var(--spg-radius);
+	padding: 16px 18px 18px;
+	margin: 0;
+	min-width: 0;
+}
+.spg-card legend {
+	float: left;
+	width: 100%;
+	font-size: 19px;
+	font-weight: 600;
+	margin-bottom: 10px;
+}
+.spg-card legend + * { clear: both; }
+
+.spg-sub {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: .08em;
+	color: var(--spg-muted);
+	margin: 4px 0 6px;
+}
+
+.spg-root input[type="text"],
+.spg-root textarea {
+	width: 100%;
+	max-width: none;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+	color: var(--spg-ink);
+	background: #fffdfa;
+	border: 1px solid var(--spg-line);
+	border-radius: 10px;
+	padding: 10px 12px;
+	box-shadow: none;
+	margin: 0;
+}
+.spg-root textarea { resize: vertical; min-height: 70px; }
+.spg-root input[type="text"]:focus,
+.spg-root textarea:focus {
+	outline: none;
+	border-color: var(--spg-accent);
+	box-shadow: 0 0 0 3px rgba(11, 42, 140, .15);
+}
+
+/* Buttons */
+.spg-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.spg-btn {
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 8px 14px;
+	border-radius: 999px;
+	border: 1px solid var(--spg-line);
+	background: var(--spg-panel);
+	color: var(--spg-ink);
+	line-height: 1.2;
+	transition: background .15s ease, border-color .15s ease;
+}
+.spg-btn:hover { border-color: var(--spg-ink); }
+.spg-btn-primary { background: var(--spg-accent); border-color: var(--spg-accent); color: var(--spg-accent-ink); }
+.spg-btn-primary:hover { background: #081f69; border-color: #081f69; color: #fff; }
+.spg-btn.is-done { background: var(--spg-ok); border-color: var(--spg-ok); }
+
+.spg-link {
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	background: none;
+	border: 0;
+	padding: 4px 0;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--spg-accent);
+}
+.spg-link:hover { text-decoration: underline; }
+
+.spg-hint { margin: 8px 0 0; font-size: 13px; color: var(--spg-muted); min-height: 1em; }
+.spg-err { color: var(--spg-err); }
+
+/* Segmented / radios */
+.spg-seg, .spg-yn { display: inline-flex; background: var(--spg-bg); border: 1px solid var(--spg-line); border-radius: 999px; padding: 3px; }
+.spg-seg label, .spg-yn label { margin: 0; cursor: pointer; }
+.spg-seg input, .spg-yn input, .spg-choice input { position: absolute; opacity: 0; pointer-events: none; }
+.spg-seg span, .spg-yn span {
+	display: block;
+	padding: 7px 18px;
+	border-radius: 999px;
+	font-weight: 600;
+	font-size: 14px;
+	color: var(--spg-muted);
+}
+.spg-seg small { font-weight: 400; opacity: .75; margin-left: 4px; }
+.spg-seg input:checked + span, .spg-yn input:checked + span { background: var(--spg-ink); color: #fff; }
+.spg-seg input:focus-visible + span, .spg-yn input:focus-visible + span,
+.spg-choice input:focus-visible + span { outline: 2px solid var(--spg-accent); outline-offset: 2px; }
+
+.spg-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.spg-choice { margin: 0; cursor: pointer; }
+.spg-choice span {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	height: 100%;
+	padding: 12px 14px;
+	border: 1.5px solid var(--spg-line);
+	border-radius: 12px;
+	background: #fffdfa;
+}
+.spg-choice strong { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 17px; }
+.spg-choice em { font-style: normal; font-size: 13px; color: var(--spg-muted); }
+.spg-choice input:checked + span { border-color: var(--spg-accent); background: var(--spg-soft); }
+
+/* Color */
+.spg-color { margin-top: 14px; }
+.spg-color-row { display: flex; gap: 10px; align-items: center; }
+.spg-root input[type="color"] {
+	width: 48px; height: 42px;
+	padding: 3px;
+	border: 1px solid var(--spg-line);
+	border-radius: 10px;
+	background: #fff;
+	cursor: pointer;
+	flex: none;
+}
+.spg-color-row input[type="text"] { max-width: 150px; font-family: ui-monospace, Menlo, Consolas, monospace; text-transform: uppercase; }
+.spg-color-name { font-size: 13px; font-weight: 600; color: var(--spg-muted); }
+.spg-swatch-group {
+	margin: 14px 0 0;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: var(--spg-muted);
+}
+.spg-swatches { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.spg-swatch {
+	width: 28px; height: 28px;
+	border-radius: 50%;
+	border: 2px solid #fff;
+	box-shadow: 0 0 0 1px var(--spg-line);
+	cursor: pointer;
+	padding: 0;
+}
+.spg-swatch.is-active { box-shadow: 0 0 0 2px var(--spg-ink); }
+
+/* Locked text */
+.spg-locked {
+	margin: 10px 0 0;
+	padding: 10px 12px;
+	border-radius: 10px;
+	background: var(--spg-bg);
+	border: 1px dashed var(--spg-line);
+	font-size: 13px;
+	color: var(--spg-muted);
+}
+.spg-lock {
+	display: block;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	margin-bottom: 2px;
+}
+
+/* Always-added block that is long enough to fold away (anatomy & physics lock) */
+.spg-lockbox {
+	margin: 10px 0 0;
+	padding: 0;
+	border-radius: 10px;
+	background: var(--spg-bg);
+	border: 1px dashed var(--spg-line);
+	font-size: 13px;
+	color: var(--spg-muted);
+}
+.spg-lockbox > summary {
+	cursor: pointer;
+	padding: 10px 12px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	list-style: none;
+}
+.spg-lockbox > summary::-webkit-details-marker { display: none; }
+.spg-lockbox > summary::before {
+	content: "▸ ";
+	display: inline-block;
+	transform: translateY(-1px);
+}
+.spg-lockbox[open] > summary::before { content: "▾ "; }
+.spg-lockpre {
+	margin: 0;
+	padding: 0 12px 12px;
+	white-space: pre-wrap;
+	word-break: break-word;
+	font: inherit;
+	line-height: 1.55;
+}
+
+/* Wardrobe */
+.spg-prefix {
+	display: flex;
+	align-items: stretch;
+	border: 1px solid var(--spg-line);
+	border-radius: 10px;
+	overflow: hidden;
+	background: #fffdfa;
+}
+.spg-prefix span {
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	background: var(--spg-bg);
+	border-right: 1px solid var(--spg-line);
+	font-weight: 600;
+	font-size: 14px;
+	white-space: nowrap;
+}
+.spg-root .spg-prefix input[type="text"] { border: 0; border-radius: 0; }
+.spg-acc { margin-top: 14px; }
+.spg-acc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.spg-acc-head .spg-sub { margin: 0; }
+.spg-yn span { padding: 5px 14px; font-size: 13px; }
+
+/* Output */
+.spg-out {
+	position: sticky;
+	top: 46px;
+	background: #16140f;
+	color: #efe9df;
+	border-radius: var(--spg-radius);
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	max-height: calc(100vh - 80px);
+}
+.spg-out-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+.spg-out h3 { color: #fff; font-size: 20px; }
+.spg-preview {
+	flex: 1;
+	margin: 0;
+	overflow: auto;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 13px;
+	line-height: 1.6;
+	background: rgba(255, 255, 255, .04);
+	border: 1px solid rgba(255, 255, 255, .08);
+	border-radius: 10px;
+	padding: 14px;
+	color: #efe9df;
+	min-height: 320px;
+}
+.spg-count { margin: 10px 0 0; font-size: 12px; color: #a39a8e; }
+
+@media (max-width: 960px) {
+	.spg-grid { grid-template-columns: 1fr; }
+	.spg-out { position: static; max-height: none; }
+	.spg-preview { max-height: 480px; }
+}
+
+@media (max-width: 520px) {
+	.spg-app { padding: 16px; border-radius: 14px; }
+	.spg-title { font-size: 28px; }
+	.spg-choices { grid-template-columns: 1fr; }
+	.spg-prefix { flex-direction: column; }
+	.spg-prefix span { padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--spg-line); }
+}
+
+/* ------------------------------------------------------------------ *
+ * Slim scrollbars
+ * ------------------------------------------------------------------ */
+.spg-root .spg-preview::-webkit-scrollbar,
+.spg-root textarea::-webkit-scrollbar { width: 6px; height: 6px; }
+.spg-root .spg-preview::-webkit-scrollbar-track,
+.spg-root textarea::-webkit-scrollbar-track { background: transparent; }
+.spg-root .spg-preview::-webkit-scrollbar-button,
+.spg-root textarea::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+.spg-root .spg-preview::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .22); border-radius: 999px; }
+.spg-root .spg-preview::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .4); }
+.spg-root textarea::-webkit-scrollbar-thumb { background: rgba(29, 26, 23, .2); border-radius: 999px; }
+.spg-root textarea::-webkit-scrollbar-thumb:hover { background: rgba(29, 26, 23, .35); }
+@supports not selector(::-webkit-scrollbar) {
+	.spg-root .spg-preview { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .25) transparent; }
+	.spg-root textarea { scrollbar-width: thin; scrollbar-color: rgba(29, 26, 23, .25) transparent; }
+}
+
+/* ------------------------------------------------------------------ *
+ * Theme lock: stops Kadence / other themes from restyling the plugin.
+ * Doubled class selector + !important so only these rules apply.
+ * ------------------------------------------------------------------ */
+.spg-root.spg-root button,
+.spg-root.spg-root button:hover,
+.spg-root.spg-root button:focus,
+.spg-root.spg-root button:active {
+	text-transform: none !important;
+	letter-spacing: normal !important;
+	text-decoration: none !important;
+	text-shadow: none !important;
+	min-height: 0 !important;
+	line-height: 1.2 !important;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+/* Tile */
+.spg-root.spg-root .spg-tile,
+.spg-root.spg-root .spg-tile:hover,
+.spg-root.spg-root .spg-tile:focus,
+.spg-root.spg-root .spg-tile:active {
+	background: var(--spg-panel) !important;
+	color: var(--spg-ink) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: var(--spg-radius) !important;
+	padding: 22px !important;
+	text-align: left !important;
+	width: 100% !important;
+}
+.spg-root.spg-root .spg-tile:hover,
+.spg-root.spg-root .spg-tile:focus-visible { border-color: var(--spg-accent) !important; }
+.spg-root.spg-root .spg-tile-name { color: var(--spg-ink) !important; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important; }
+.spg-root.spg-root .spg-tile-desc { color: var(--spg-muted) !important; }
+.spg-root.spg-root .spg-tile-icon { background: var(--spg-soft) !important; color: var(--spg-accent) !important; }
+
+/* Default buttons */
+.spg-root.spg-root .spg-btn,
+.spg-root.spg-root .spg-btn:focus,
+.spg-root.spg-root .spg-btn:active {
+	background: var(--spg-panel) !important;
+	color: var(--spg-ink) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 999px !important;
+	padding: 8px 14px !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	box-shadow: none !important;
+}
+.spg-root.spg-root .spg-btn:hover {
+	background: var(--spg-bg) !important;
+	color: var(--spg-ink) !important;
+	border-color: var(--spg-ink) !important;
+}
+
+/* Primary buttons */
+.spg-root.spg-root .spg-btn-primary,
+.spg-root.spg-root .spg-btn-primary:focus,
+.spg-root.spg-root .spg-btn-primary:active {
+	background: var(--spg-accent) !important;
+	border-color: var(--spg-accent) !important;
+	color: #ffffff !important;
+}
+.spg-root.spg-root .spg-btn-primary:hover {
+	background: #081f69 !important;
+	border-color: #081f69 !important;
+	color: #ffffff !important;
+}
+.spg-root.spg-root .spg-btn.is-done,
+.spg-root.spg-root .spg-btn.is-done:hover {
+	background: var(--spg-ok) !important;
+	border-color: var(--spg-ok) !important;
+	color: #ffffff !important;
+}
+
+/* Text links */
+.spg-root.spg-root .spg-link,
+.spg-root.spg-root .spg-link:hover,
+.spg-root.spg-root .spg-link:focus,
+.spg-root.spg-root .spg-link:active {
+	background: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	padding: 4px 0 !important;
+	color: var(--spg-accent) !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+}
+.spg-root.spg-root .spg-link:hover { text-decoration: underline !important; }
+
+/* Swatches keep their own color (set inline with !important) */
+.spg-root.spg-root .spg-swatch,
+.spg-root.spg-root .spg-swatch:hover,
+.spg-root.spg-root .spg-swatch:focus,
+.spg-root.spg-root .spg-swatch:active {
+	width: 28px !important;
+	height: 28px !important;
+	min-width: 0 !important;
+	padding: 0 !important;
+	border: 2px solid #ffffff !important;
+	border-radius: 50% !important;
+	box-shadow: 0 0 0 1px var(--spg-line) !important;
+	opacity: 1 !important;
+	transition: transform .12s ease;
+}
+.spg-root.spg-root .spg-swatch:hover { transform: scale(1.12); }
+.spg-root.spg-root .spg-swatch.is-active { box-shadow: 0 0 0 2px var(--spg-ink) !important; }
+
+/* Headings and text */
+.spg-root.spg-root h1, .spg-root.spg-root h2, .spg-root.spg-root h3, .spg-root.spg-root legend {
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+	text-transform: none !important;
+	letter-spacing: normal !important;
+}
+.spg-root.spg-root .spg-out h3 { color: #ffffff !important; }
+.spg-root.spg-root .spg-preview {
+	background: rgba(255, 255, 255, .04) !important;
+	color: #efe9df !important;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+	border: 1px solid rgba(255, 255, 255, .08) !important;
+}
+
+/* Fields */
+.spg-root.spg-root input[type="text"],
+.spg-root.spg-root textarea {
+	background: #fffdfa !important;
+	color: var(--spg-ink) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 10px !important;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+	font-size: 14px !important;
+}
+.spg-root.spg-root input[type="text"]:focus,
+.spg-root.spg-root textarea:focus {
+	border-color: var(--spg-accent) !important;
+	box-shadow: 0 0 0 3px rgba(11, 42, 140, .15) !important;
+	outline: none !important;
+}
+.spg-root.spg-root .spg-prefix input[type="text"],
+.spg-root.spg-root .spg-prefix input[type="text"]:focus { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+.spg-root.spg-root .spg-color-row input[type="text"] { font-family: ui-monospace, Menlo, Consolas, monospace !important; }
+
+/* ------------------------------------------------------------------ *
+ * Saved pose library
+ * ------------------------------------------------------------------ */
+.spg-saved {
+	margin-top: 16px;
+	padding-top: 14px;
+	border-top: 1px dashed var(--spg-line);
+}
+.spg-saved-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.spg-saved-title { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-weight: 700; font-size: 17px; }
+.spg-saved-count { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; font-weight: 600; color: var(--spg-muted); }
+.spg-save-form { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.spg-save-form input[type="text"] { flex: 1 1 200px; }
+.spg-root .spg-saved-filter { margin-bottom: 8px !important; padding: 7px 12px !important; font-size: 13px !important; }
+
+.spg-root .spg-saved-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	max-height: 260px;
+	overflow-y: auto;
+}
+.spg-root .spg-saved-list::-webkit-scrollbar { width: 6px; }
+.spg-root .spg-saved-list::-webkit-scrollbar-button { display: none; }
+.spg-root .spg-saved-list::-webkit-scrollbar-thumb { background: rgba(29, 26, 23, .2); border-radius: 999px; }
+@supports not selector(::-webkit-scrollbar) {
+	.spg-root .spg-saved-list { scrollbar-width: thin; scrollbar-color: rgba(29, 26, 23, .25) transparent; }
+}
+.spg-root .spg-saved-list li { margin: 0; padding: 0; }
+.spg-saved-empty { font-size: 13px; color: var(--spg-muted); padding: 4px 0; }
+
+.spg-saved-item {
+	display: flex;
+	align-items: stretch;
+	border: 1px solid var(--spg-line);
+	border-radius: 10px;
+	background: #fffdfa;
+	overflow: hidden;
+}
+.spg-saved-item.is-active { border-color: var(--spg-accent); background: var(--spg-soft); }
+
+.spg-root.spg-root .spg-saved-load,
+.spg-root.spg-root .spg-saved-load:hover,
+.spg-root.spg-root .spg-saved-load:focus,
+.spg-root.spg-root .spg-saved-load:active {
+	flex: 1;
+	min-width: 0;
+	display: flex !important;
+	flex-direction: column;
+	gap: 2px;
+	padding: 8px 12px !important;
+	margin: 0 !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	color: var(--spg-ink) !important;
+	text-align: left !important;
+	cursor: pointer;
+}
+.spg-root.spg-root .spg-saved-load:hover { background: rgba(11, 42, 140, .05) !important; }
+.spg-root.spg-root .spg-saved-load strong { font-size: 14px; font-weight: 700; color: var(--spg-ink); }
+.spg-root.spg-root .spg-saved-load span {
+	font-size: 12px;
+	color: var(--spg-muted);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.spg-root.spg-root .spg-saved-del,
+.spg-root.spg-root .spg-saved-del:focus,
+.spg-root.spg-root .spg-saved-del:active {
+	flex: none;
+	width: 38px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-left: 1px solid var(--spg-line) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	color: var(--spg-muted) !important;
+	font-size: 18px !important;
+	cursor: pointer;
+}
+.spg-root.spg-root .spg-saved-del:hover {
+	background: #fdecea !important;
+	color: var(--spg-err) !important;
+	border-left: 1px solid var(--spg-line) !important;
+}
+
+/* ------------------------------------------------------------------ *
+ * AI pose assistant
+ * ------------------------------------------------------------------ */
+.spg-ai {
+	margin-top: 16px;
+	padding: 14px;
+	border-radius: 12px;
+	background: linear-gradient(135deg, #eef1fb 0%, #f6f0fb 100%);
+	border: 1px solid #d9dff3;
+}
+.spg-ai-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.spg-ai-badge {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	padding: 3px 7px;
+	border-radius: 6px;
+	background: var(--spg-accent);
+	color: #fff;
+}
+.spg-ai-title { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-weight: 700; font-size: 17px; }
+.spg-ai-model { margin-left: auto; font-size: 11px; color: var(--spg-muted); }
+.spg-ai-lead { margin: 0 0 10px; font-size: 13px; color: var(--spg-muted); }
+.spg-ai .spg-hint a { color: var(--spg-accent); font-weight: 600; }
+.spg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+.spg-root.spg-root .spg-chip,
+.spg-root.spg-root .spg-chip:focus,
+.spg-root.spg-root .spg-chip:active {
+	background: rgba(255, 255, 255, .7) !important;
+	color: var(--spg-ink) !important;
+	border: 1px solid #d9dff3 !important;
+	border-radius: 999px !important;
+	padding: 5px 10px !important;
+	font-size: 12px !important;
+	font-weight: 500 !important;
+	box-shadow: none !important;
+	cursor: pointer;
+	text-align: left !important;
+	max-width: 100%;
+	white-space: normal !important;
+}
+.spg-root.spg-root .spg-chip:hover {
+	background: #ffffff !important;
+	color: var(--spg-accent) !important;
+	border-color: var(--spg-accent) !important;
+}
+
+.spg-root.spg-root .spg-btn:disabled,
+.spg-root.spg-root .spg-btn:disabled:hover {
+	opacity: .55 !important;
+	cursor: not-allowed !important;
+}
+.spg-root.spg-root .spg-btn-primary:disabled:hover { background: var(--spg-accent) !important; }
+.spg-root.spg-root textarea:disabled { opacity: .6 !important; cursor: not-allowed !important; }
+
+.spg-root.spg-root textarea.is-loading {
+	background: linear-gradient(90deg, #fffdfa 0%, #eef1fb 50%, #fffdfa 100%) !important;
+	background-size: 200% 100% !important;
+	animation: spg-shimmer 1.2s linear infinite;
+}
+@keyframes spg-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) {
+	.spg-root.spg-root textarea.is-loading { animation: none; }
+}
+
+/* ------------------------------------------------------------------ *
+ * v2: multi-prompt Studio
+ * ------------------------------------------------------------------ */
+
+/* Card header: title + optional toggle on the right */
+.spg-root.spg-root .spg-card legend {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+.spg-root .spg-card legend .spg-yn { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+.spg-choices-3 { grid-template-columns: repeat(3, 1fr); }
+.spg-field { margin-top: 12px; }
+
+/* Checkbox */
+.spg-root .spg-check {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	margin: 12px 0 0;
+	font-size: 14px;
+	cursor: pointer;
+	color: var(--spg-ink);
+}
+.spg-root.spg-root .spg-check input[type="checkbox"] {
+	appearance: none;
+	-webkit-appearance: none;
+	flex: none;
+	width: 18px !important;
+	height: 18px !important;
+	margin: 1px 0 0 !important;
+	border: 1.5px solid var(--spg-line) !important;
+	border-radius: 5px !important;
+	background: #fffdfa !important;
+	cursor: pointer;
+	display: grid;
+	place-content: center;
+	box-shadow: none !important;
+}
+.spg-root.spg-root .spg-check input[type="checkbox"]::before {
+	content: "";
+	width: 10px;
+	height: 10px;
+	transform: scale(0);
+	transition: transform .12s ease;
+	background: #fff;
+	clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.spg-root.spg-root .spg-check input[type="checkbox"]:checked {
+	background: var(--spg-accent) !important;
+	border-color: var(--spg-accent) !important;
+}
+.spg-root.spg-root .spg-check input[type="checkbox"]:checked::before { transform: scale(1); }
+.spg-root.spg-root .spg-check input[type="checkbox"]:focus-visible { outline: 2px solid var(--spg-accent); outline-offset: 2px; }
+
+/* Top bar + setups drawer */
+.spg-bar-actions { display: flex; align-items: center; gap: 14px; }
+.spg-setups {
+	background: var(--spg-panel);
+	border: 1px solid var(--spg-line);
+	border-radius: var(--spg-radius);
+	padding: 4px 18px 16px;
+	margin-bottom: 18px;
+}
+.spg-setups .spg-saved { border-top: 0; padding-top: 0; margin-top: 8px; }
+.spg-setups-lead { margin-top: 12px !important; }
+
+/* Inline AI refine row */
+.spg-ai-inline {
+	margin-top: 10px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	background: linear-gradient(135deg, #eef1fb 0%, #f6f0fb 100%);
+	border: 1px solid #d9dff3;
+}
+.spg-ai-inline .spg-chips { margin-top: 0; }
+.spg-ai-inline .spg-actions { margin-top: 8px; }
+.spg-ai-inline .spg-hint { margin-top: 6px; }
+.spg-ai-inline .spg-hint:empty { display: none; }
+.spg-ai-inline .spg-hint a { color: var(--spg-accent); font-weight: 600; }
+
+.spg-root.spg-root .spg-btn-ai,
+.spg-root.spg-root .spg-btn-ai:focus,
+.spg-root.spg-root .spg-btn-ai:active {
+	background: linear-gradient(135deg, #0b2a8c, #5b2a86) !important;
+	border-color: transparent !important;
+	color: #ffffff !important;
+}
+.spg-root.spg-root .spg-btn-ai:hover {
+	background: linear-gradient(135deg, #081f69, #4a1f70) !important;
+	color: #ffffff !important;
+}
+.spg-root.spg-root .spg-btn-ai:disabled:hover { background: linear-gradient(135deg, #0b2a8c, #5b2a86) !important; }
+
+/* Missing-field warnings above the prompt */
+.spg-root .spg-warn {
+	list-style: none;
+	margin: 0 0 10px;
+	padding: 8px 12px;
+	border-radius: 10px;
+	background: rgba(234, 179, 8, .12);
+	border: 1px solid rgba(234, 179, 8, .35);
+	color: #f5d77a;
+	font-size: 12px;
+}
+.spg-root .spg-warn li { margin: 0; padding: 0; }
+.spg-root .spg-warn li::before { content: "\26A0  "; }
+
+@media (max-width: 720px) {
+	.spg-choices-3 { grid-template-columns: 1fr; }
+	.spg-gen-bar { flex-wrap: wrap; }
+}
+
+/* Feet: "A glimpse of … , only up to the ankles." */
+.spg-root .spg-prefix .spg-suffix {
+	border-right: 0;
+	border-left: 1px solid var(--spg-line);
+	font-weight: 500;
+	color: var(--spg-muted);
+}
+.spg-fixed { margin: 0 !important; }
+@media (max-width: 520px) {
+	.spg-root .spg-prefix .spg-suffix { border-left: 0; border-bottom: 0; border-top: 1px solid var(--spg-line); }
+}
+
+/* Feet: Look / Carousel tabs */
+.spg-modes {
+	display: flex;
+	gap: 6px;
+	padding: 4px;
+	margin: -4px 0 18px;
+	background: var(--spg-panel);
+	border: 1px solid var(--spg-line);
+	border-radius: 999px;
+	width: fit-content;
+	max-width: 100%;
+	flex-wrap: wrap;
+}
+.spg-root.spg-root .spg-mode,
+.spg-root.spg-root .spg-mode:focus,
+.spg-root.spg-root .spg-mode:active {
+	background: transparent !important;
+	color: var(--spg-muted) !important;
+	border: 0 !important;
+	border-radius: 999px !important;
+	padding: 8px 16px !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+	box-shadow: none !important;
+	cursor: pointer;
+}
+.spg-root.spg-root .spg-mode:hover { background: var(--spg-bg) !important; color: var(--spg-ink) !important; }
+.spg-root.spg-root .spg-mode.is-active,
+.spg-root.spg-root .spg-mode.is-active:hover { background: var(--spg-ink) !important; color: #ffffff !important; }
+.spg-mode-lead {
+	margin: 0;
+	padding: 12px 14px;
+	border-radius: 12px;
+	background: var(--spg-soft);
+	border: 1px solid #d9dff3;
+	font-size: 13px;
+	color: var(--spg-ink);
+}
+
+/* Prefix field with one-click erase (×) */
+.spg-root .spg-prefix { align-items: stretch; }
+.spg-root.spg-root .spg-prefix input[type="text"] {
+	flex: 1 1 auto;
+	width: auto !important;
+	min-width: 0;
+}
+.spg-root.spg-root .spg-clear,
+.spg-root.spg-root .spg-clear:focus,
+.spg-root.spg-root .spg-clear:active {
+	flex: none;
+	width: 40px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-left: 1px solid var(--spg-line) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	color: var(--spg-muted) !important;
+	font-size: 20px !important;
+	line-height: 1 !important;
+	cursor: pointer;
+}
+.spg-root.spg-root .spg-clear:hover {
+	background: #fdecea !important;
+	color: var(--spg-err) !important;
+}
+.spg-root .spg-suffix-note { margin-top: 6px; }
+.spg-root .spg-suffix-note strong { color: var(--spg-ink); font-weight: 600; }
+
+@media (max-width: 520px) {
+	.spg-root .spg-prefix { flex-direction: row; flex-wrap: wrap; }
+	.spg-root .spg-prefix span { flex-basis: 100%; }
+}
+
+/* Dropdowns */
+.spg-root .spg-select { position: relative; }
+.spg-root.spg-root .spg-select select {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 100% !important;
+	max-width: none !important;
+	min-height: 0 !important;
+	margin: 0 !important;
+	padding: 10px 40px 10px 12px !important;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+	font-size: 14px !important;
+	line-height: 1.4 !important;
+	color: var(--spg-ink) !important;
+	background: #fffdfa !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 10px !important;
+	box-shadow: none !important;
+	cursor: pointer;
+}
+.spg-root.spg-root .spg-select select:focus {
+	outline: none !important;
+	border-color: var(--spg-accent) !important;
+	box-shadow: 0 0 0 3px rgba(11, 42, 140, .15) !important;
+}
+.spg-root .spg-select::after {
+	content: "";
+	position: absolute;
+	right: 16px;
+	top: 50%;
+	width: 8px;
+	height: 8px;
+	border-right: 2px solid var(--spg-muted);
+	border-bottom: 2px solid var(--spg-muted);
+	transform: translateY(-70%) rotate(45deg);
+	pointer-events: none;
+}
+.spg-root .spg-seg { flex-wrap: wrap; }
+
+/* ------------------------------------------------------------------ *
+ * One-click erase (×) inside every text box
+ * ------------------------------------------------------------------ */
+.spg-root .spg-box { position: relative; display: block; width: 100%; }
+.spg-root .spg-save-form .spg-box { flex: 1 1 200px; width: auto; }
+.spg-root.spg-root .spg-box > input[type="text"],
+.spg-root.spg-root .spg-box > input[type="search"],
+.spg-root.spg-root .spg-box > textarea { padding-right: 40px !important; }
+
+.spg-root.spg-root .spg-erase {
+	position: absolute;
+	top: 50%;
+	right: 7px;
+	transform: translateY(-50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px !important;
+	height: 26px !important;
+	min-width: 0 !important;
+	min-height: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	background: var(--spg-bg) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 999px !important;
+	box-shadow: none !important;
+	color: var(--spg-muted) !important;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+	font-size: 17px !important;
+	font-weight: 600 !important;
+	line-height: 1 !important;
+	cursor: pointer;
+}
+.spg-root.spg-root .spg-box-area .spg-erase { top: 8px; right: 10px; transform: none; }
+.spg-root.spg-root .spg-erase:hover {
+	background: #fdecea !important;
+	border-color: #f3b9b3 !important;
+	color: var(--spg-err) !important;
+}
+.spg-root.spg-root .spg-erase:focus-visible { outline: 2px solid var(--spg-accent); outline-offset: 2px; }
+.spg-root.spg-root .spg-erase[hidden] { display: none !important; }
+
+/* Quick-choose preset buttons (e.g. "I am showing my left hand") */
+.spg-presets {
+	margin-bottom: 10px;
+}
+.spg-presets .spg-chip {
+	font-weight: 600;
+}
+
+/* Reset camera */
+.spg-cam-reset {
+	margin-top: 4px;
+}
+
+/* ------------------------------------------------------------------ *
+ * 3.0.0: favourites, folded palettes, AI options, history, export/import
+ * ------------------------------------------------------------------ */
+
+/* Screen-reader only announcements (prompt updated, counts) */
+.spg-sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Small button, used in list rows and the export/import strip */
+.spg-btn-mini {
+	padding: 5px 10px;
+	font-size: 12px;
+}
+
+/* ★ save this color */
+.spg-fav {
+	flex: 0 0 auto;
+	width: 34px;
+	height: 34px;
+	border-radius: 9px;
+	border: 1px solid var(--spg-line);
+	background: var(--spg-card);
+	color: var(--spg-muted);
+	font-size: 15px;
+	line-height: 1;
+	cursor: pointer;
+}
+.spg-fav:hover { color: var(--spg-ink); }
+.spg-fav.is-on {
+	color: #C9A227;
+	border-color: #C9A227;
+}
+
+/* The rest of a palette, folded away */
+.spg-more-colors {
+	margin-top: 8px;
+}
+.spg-more-colors > summary {
+	cursor: pointer;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: var(--spg-muted);
+	list-style: none;
+	padding: 6px 0;
+}
+.spg-more-colors > summary::-webkit-details-marker { display: none; }
+.spg-more-colors > summary::before { content: "▸ "; }
+.spg-more-colors[open] > summary::before { content: "▾ "; }
+
+/* AI: the three options to choose between */
+.spg-ai-options {
+	margin-top: 10px;
+	display: grid;
+	gap: 8px;
+}
+.spg-ai-option {
+	display: block;
+	width: 100%;
+	text-align: left;
+	padding: 10px 12px;
+	border-radius: 10px;
+	border: 1px solid var(--spg-line);
+	background: var(--spg-card);
+	cursor: pointer;
+	font: inherit;
+	color: inherit;
+}
+.spg-ai-option:hover,
+.spg-ai-option:focus-visible {
+	border-color: var(--spg-ink);
+}
+.spg-ai-option strong {
+	display: block;
+	font-size: 11px;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: var(--spg-muted);
+	margin-bottom: 4px;
+}
+.spg-ai-option span {
+	display: block;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+/* Library export / import strip */
+.spg-lib-io {
+	margin: 8px 0 0;
+}
+
+/* Prompt history */
+.spg-history .spg-saved-list {
+	margin-top: 8px;
+}
+
+/* ------------------------------------------------------------------ *
+ * Narrow screens: the output panel is the weak spot, so give it room
+ * ------------------------------------------------------------------ */
+
+@media (max-width: 720px) {
+	.spg-out {
+		position: static;
+	}
+	.spg-out-head {
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.spg-preview {
+		max-height: 46vh;
+		font-size: 12px;
+		line-height: 1.55;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior: contain;
+	}
+	.spg-bar-actions {
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
+	.spg-ai-option span {
+		font-size: 12px;
+	}
+}
+
+@media (max-width: 520px) {
+	.spg-preview {
+		max-height: 40vh;
+	}
+	.spg-color-row {
+		flex-wrap: wrap;
+	}
+	.spg-color-name {
+		flex: 1 0 100%;
+	}
+	.spg-lib-io .spg-btn,
+	.spg-presets .spg-chip {
+		flex: 1 1 auto;
+	}
+}
+
+/* [studio home="no"]: one generator, no way back to the tiles */
+.spg-no-home .spg-home,
+.spg-no-home [data-back] {
+	display: none;
+}
+
+/* ==========================================================================
+ * Archive design system
+ *
+ * The token swap at the top of this file carried every rule that reads
+ * from a token. This block handles the rest: the places where a light
+ * value was written literally, and the pieces the Archive styles
+ * differently in kind rather than in colour — pill buttons on a coral
+ * gradient, 18px cards, uppercase tracked eyebrows, Inter set tight.
+ *
+ * The doubled .spg-root.spg-root selector and !important match the
+ * existing theme-lock section above, which is what stops the theme
+ * restyling the plugin. Anything overriding a rule from that section
+ * has to be written the same way or it loses.
+ * ====================================================================== */
+
+/* ---- Shell ---------------------------------------------------------- */
+
+.spg-root.spg-root .spg-app {
+	background: var(--spg-bg) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 22px !important;
+	padding: 30px !important;
+}
+
+/* ---- Type ----------------------------------------------------------- */
+
+.spg-root.spg-root h1,
+.spg-root.spg-root h2,
+.spg-root.spg-root h3,
+.spg-root.spg-root legend {
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+	color: var(--spg-ink) !important;
+	letter-spacing: -0.03em !important;
+	font-weight: 700 !important;
+}
+
+.spg-root.spg-root .spg-title { font-size: 40px !important; line-height: 1.05 !important; letter-spacing: -0.042em !important; }
+.spg-root.spg-root .spg-gen-title { font-size: 30px !important; letter-spacing: -0.035em !important; }
+.spg-root.spg-root .spg-tile-name { font-size: 21px !important; letter-spacing: -0.03em !important; }
+.spg-root.spg-root .spg-card legend { font-size: 18px !important; letter-spacing: -0.025em !important; }
+
+.spg-root.spg-root .spg-eyebrow,
+.spg-root.spg-root .spg-sub,
+.spg-root.spg-root .spg-lock,
+.spg-root.spg-root .spg-swatch-group {
+	font-size: 12px !important;
+	font-weight: 600 !important;
+	letter-spacing: 1.2px !important;
+	text-transform: uppercase !important;
+	color: var(--spg-faint) !important;
+}
+
+.spg-root.spg-root .spg-lead,
+.spg-root.spg-root .spg-hint,
+.spg-root.spg-root .spg-tile-desc { color: var(--spg-muted) !important; }
+.spg-root.spg-root .spg-err { color: var(--spg-err) !important; }
+
+/* ---- Cards and tiles ------------------------------------------------ */
+
+.spg-root.spg-root .spg-card,
+.spg-root.spg-root .spg-tile,
+.spg-root.spg-root .spg-tile:hover,
+.spg-root.spg-root .spg-tile:focus,
+.spg-root.spg-root .spg-tile:active {
+	background: var(--spg-panel) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: var(--spg-radius) !important;
+}
+
+.spg-root.spg-root .spg-tile:hover,
+.spg-root.spg-root .spg-tile:focus-visible {
+	border-color: var(--spg-line-2) !important;
+	box-shadow: 0 14px 34px -18px rgba(255, 95, 126, 0.55) !important;
+}
+
+.spg-root.spg-root .spg-tile-icon {
+	background: var(--spg-surface) !important;
+	border: 1px solid var(--spg-line) !important;
+	color: var(--spg-accent) !important;
+	border-radius: 14px !important;
+}
+
+/* ---- Buttons -------------------------------------------------------- */
+
+.spg-root.spg-root .spg-btn,
+.spg-root.spg-root .spg-btn:focus,
+.spg-root.spg-root .spg-btn:active {
+	background: var(--spg-surface-2) !important;
+	color: var(--spg-ink) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 100px !important;
+	padding: 10px 17px !important;
+	font-size: 13.5px !important;
+	font-weight: 600 !important;
+	letter-spacing: -0.01em !important;
+	box-shadow: none !important;
+}
+
+.spg-root.spg-root .spg-btn:hover {
+	background: rgba(255, 255, 255, 0.13) !important;
+	border-color: var(--spg-line-2) !important;
+	color: var(--spg-ink) !important;
+}
+
+/* The one loud control per screen. */
+.spg-root.spg-root .spg-btn-primary,
+.spg-root.spg-root .spg-btn-primary:focus,
+.spg-root.spg-root .spg-btn-primary:active {
+	background: var(--spg-grad) !important;
+	border: 0 !important;
+	color: var(--spg-accent-ink) !important;
+	font-weight: 700 !important;
+	box-shadow: 0 8px 26px rgba(255, 95, 126, 0.24) !important;
+}
+
+.spg-root.spg-root .spg-btn-primary:hover {
+	background: var(--spg-grad) !important;
+	border: 0 !important;
+	color: var(--spg-accent-ink) !important;
+	filter: brightness(1.05);
+	box-shadow: 0 12px 34px rgba(255, 95, 126, 0.32) !important;
+}
+
+.spg-root.spg-root .spg-btn.is-done,
+.spg-root.spg-root .spg-btn.is-done:hover {
+	background: var(--spg-ok) !important;
+	border-color: var(--spg-ok) !important;
+	color: #06251a !important;
+	filter: none;
+}
+
+.spg-root.spg-root .spg-link,
+.spg-root.spg-root .spg-link:hover,
+.spg-root.spg-root .spg-link:focus,
+.spg-root.spg-root .spg-link:active { color: var(--spg-accent) !important; }
+
+/* ---- Fields --------------------------------------------------------- */
+
+.spg-root.spg-root input[type="text"],
+.spg-root.spg-root textarea,
+.spg-root.spg-root select {
+	background: var(--spg-surface) !important;
+	color: var(--spg-ink) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 12px !important;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+	font-size: 14.5px !important;
+}
+
+.spg-root.spg-root input[type="text"]::placeholder,
+.spg-root.spg-root textarea::placeholder { color: var(--spg-faint) !important; }
+
+.spg-root.spg-root input[type="text"]:focus,
+.spg-root.spg-root textarea:focus,
+.spg-root.spg-root select:focus {
+	border-color: var(--spg-accent) !important;
+	background: var(--spg-surface-2) !important;
+	box-shadow: 0 0 0 3px rgba(255, 126, 107, 0.18) !important;
+	outline: none !important;
+}
+
+.spg-root.spg-root input[type="color"] {
+	background: var(--spg-surface) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 12px !important;
+}
+
+/* ---- Segmented controls, choices, swatches -------------------------- */
+
+.spg-root .spg-seg,
+.spg-root .spg-yn {
+	background: var(--spg-surface) !important;
+	border: 1px solid var(--spg-line) !important;
+}
+
+.spg-root .spg-seg span,
+.spg-root .spg-yn span { color: var(--spg-muted) !important; }
+
+/* The checked pill previously painted --spg-ink as its background with
+   white text. On the dark theme --spg-ink IS near-white, so that would
+   have been white on white and unreadable. */
+.spg-root .spg-seg input:checked + span,
+.spg-root .spg-yn input:checked + span {
+	background: var(--spg-ink) !important;
+	color: #0d0d0f !important;
+	font-weight: 650 !important;
+}
+
+.spg-root .spg-choice span {
+	background: var(--spg-surface) !important;
+	border: 1.5px solid var(--spg-line) !important;
+	border-radius: 14px !important;
+	color: var(--spg-ink) !important;
+}
+
+.spg-root .spg-choice input:checked + span {
+	border-color: var(--spg-accent) !important;
+	background: rgba(255, 126, 107, 0.1) !important;
+}
+
+.spg-root.spg-root .spg-choice strong {
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+	letter-spacing: -0.02em !important;
+}
+
+.spg-root .spg-choice em { color: var(--spg-muted) !important; }
+
+/* Swatches keep a light ring: on a dark ground it reads as a bezel and
+   stops a dark-coloured swatch disappearing into the card. */
+.spg-root.spg-root .spg-swatch { border-color: rgba(255, 255, 255, 0.85) !important; }
+.spg-root.spg-root .spg-swatch.is-active { box-shadow: 0 0 0 2px var(--spg-accent) !important; }
+
+/* ---- Locked / folded blocks ----------------------------------------- */
+
+.spg-root .spg-locked,
+.spg-root .spg-lockbox {
+	background: var(--spg-surface) !important;
+	border: 1px dashed var(--spg-line-2) !important;
+	border-radius: 14px !important;
+	color: var(--spg-muted) !important;
+}
+
+/* ---- Output panel --------------------------------------------------- */
+
+.spg-root.spg-root .spg-out {
+	background: var(--spg-panel) !important;
+	border: 1px solid var(--spg-line) !important;
+	color: var(--spg-ink) !important;
+	border-radius: var(--spg-radius) !important;
+	padding: 18px !important;
+}
+
+.spg-root.spg-root .spg-out h3 { color: var(--spg-ink) !important; }
+
+.spg-root.spg-root .spg-preview {
+	background: rgba(0, 0, 0, 0.32) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 14px !important;
+	color: var(--spg-muted) !important;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+	font-size: 13.5px !important;
+	line-height: 1.62 !important;
+}
+
+.spg-root .spg-count { color: var(--spg-faint) !important; }
+
+/* A dark ground needs light scrollbar thumbs in the textareas too; the
+   originals were ink-on-cream. */
+.spg-root textarea::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18) !important; }
+.spg-root textarea::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.32) !important; }
+
+/* ---- Focus ---------------------------------------------------------- */
+
+.spg-root :focus-visible {
+	outline: 2px solid var(--spg-accent) !important;
+	outline-offset: 2px !important;
+	border-radius: 8px;
+}
+
+/* ---- Corrections found by looking at the rendered page --------------
+ *
+ * Two rules further up outrank the block above and had to be answered
+ * at their own specificity:
+ *
+ *   .spg-root.spg-root .spg-select select  (0,3,1) hardcodes the cream
+ *   field background, which left near-white option text on near-white.
+ *
+ *   .spg-seg input:checked + span sets `color: #fff` against a
+ *   background of --spg-ink. That token is now near-white, so the
+ *   selected pill was white text on a white pill.
+ * -------------------------------------------------------------------- */
+
+.spg-root.spg-root .spg-select select {
+	background: var(--spg-surface) !important;
+	color: var(--spg-ink) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 12px !important;
+	font-size: 14.5px !important;
+}
+
+.spg-root.spg-root .spg-select select:hover {
+	background: var(--spg-surface-2) !important;
+	border-color: var(--spg-line-2) !important;
+}
+
+.spg-root.spg-root .spg-select select:focus {
+	background: var(--spg-surface-2) !important;
+	border-color: var(--spg-accent) !important;
+	box-shadow: 0 0 0 3px rgba(255, 126, 107, 0.18) !important;
+}
+
+/* The menu itself is drawn by the OS, which does not inherit any of the
+   above: without an explicit pair here the options render as the
+   platform default and can come out unreadable on a dark page. */
+.spg-root.spg-root .spg-select select option,
+.spg-root.spg-root .spg-select select optgroup {
+	background: #17161a !important;
+	color: #f5f5f7 !important;
+}
+
+/* The chevron drawn beside the closed select. */
+.spg-root .spg-select::after { color: var(--spg-muted) !important; }
+
+.spg-root.spg-root .spg-seg input:checked + span,
+.spg-root.spg-root .spg-yn input:checked + span {
+	background: var(--spg-ink) !important;
+	color: #0d0d0f !important;
+	font-weight: 650 !important;
+}
+
+.spg-root.spg-root .spg-seg small,
+.spg-root.spg-root .spg-yn small { color: inherit !important; opacity: 0.62; }
+
+/* ---- Workflow -------------------------------------------------------
+ *
+ * Styling only; no markup or behaviour changes.
+ *
+ * The thing this tool is for is getting a finished prompt onto the
+ * clipboard. On a wide screen that is easy — the output panel is sticky
+ * and Copy is always on screen. Below 960px the layout stacks, the
+ * panel stops being sticky, and Copy ends up far below a long form.
+ * These rules put it back within reach and make the controls big
+ * enough to hit on a phone.
+ * -------------------------------------------------------------------- */
+
+/* Anything the page scrolls to should clear the sticky output header. */
+.spg-root .spg-card,
+.spg-root .spg-acc { scroll-margin-top: 78px; }
+
+@media (max-width: 960px) {
+	/* The prompt is the destination, so give it a clear edge rather than
+	   letting it read as one more field in the stack. */
+	.spg-root.spg-root .spg-out {
+		border-color: var(--spg-line-2) !important;
+		box-shadow: 0 18px 46px -24px rgba(0, 0, 0, 0.9) !important;
+	}
+
+	/* Copy stays put while the prompt scrolls under it. */
+	.spg-root .spg-out-head {
+		position: sticky;
+		top: 0;
+		z-index: 2;
+		margin: -18px -18px 12px;
+		padding: 14px 18px;
+		background: var(--spg-panel);
+		border-bottom: 1px solid var(--spg-line);
+		border-radius: var(--spg-radius) var(--spg-radius) 0 0;
+	}
+
+	.spg-root.spg-root .spg-out-head .spg-btn-primary {
+		padding: 12px 20px !important;
+		font-size: 15px !important;
+	}
+}
+
+@media (max-width: 720px) {
+	/* Comfortable tap targets. 44px is the size a thumb actually hits. */
+	.spg-root.spg-root .spg-btn {
+		min-height: 44px !important;
+		padding: 11px 18px !important;
+		font-size: 14px !important;
+	}
+
+	.spg-root.spg-root .spg-select select,
+	.spg-root.spg-root input[type="text"],
+	.spg-root.spg-root textarea {
+		min-height: 46px !important;
+		/* 16px keeps iOS from zooming the page when a field is focused. */
+		font-size: 16px !important;
+	}
+
+	.spg-root .spg-seg span,
+	.spg-root .spg-yn span { padding: 10px 16px !important; }
+
+	.spg-root.spg-root .spg-swatch {
+		width: 34px !important;
+		height: 34px !important;
+	}
+
+	.spg-root.spg-root .spg-app { padding: 18px !important; border-radius: 18px !important; }
+	.spg-root.spg-root .spg-card { padding: 16px !important; }
+	.spg-root.spg-root .spg-title { font-size: 30px !important; }
+	.spg-root.spg-root .spg-gen-title { font-size: 24px !important; }
+}
+
+/* The copy confirmation is the only feedback that the click worked, so
+   let it settle rather than snapping. */
+.spg-root.spg-root .spg-btn.is-done {
+	transition: background 0.18s var(--spg-ease), color 0.18s var(--spg-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.spg-root.spg-root .spg-btn.is-done { transition: none; }
+}
+
+/* ---- AI pose assistant ---------------------------------------------
+ *
+ * This block was written for the light theme and kept its own colours
+ * rather than reading the tokens, so the token swap did not reach it:
+ * a pale lavender gradient panel, white-ish chips, a navy/purple
+ * button, and `--spg-card` — a token that has never existed anywhere in
+ * this file, so the option buttons fell back to transparent.
+ *
+ * Every value here is the dark equivalent of what was already intended.
+ * -------------------------------------------------------------------- */
+
+.spg-root.spg-root .spg-ai,
+.spg-root.spg-root .spg-ai-inline {
+	background: linear-gradient(135deg, rgba(255, 95, 126, 0.07) 0%, rgba(255, 160, 92, 0.05) 100%) !important;
+	border: 1px solid var(--spg-line-2) !important;
+	border-radius: 16px !important;
+	color: var(--spg-ink) !important;
+}
+
+.spg-root.spg-root .spg-ai-title { color: var(--spg-ink) !important; letter-spacing: -0.02em !important; }
+.spg-root.spg-root .spg-ai-lead,
+.spg-root.spg-root .spg-ai-model { color: var(--spg-muted) !important; }
+
+.spg-root.spg-root .spg-ai-badge {
+	background: var(--spg-grad) !important;
+	color: var(--spg-accent-ink) !important;
+	border-radius: 7px !important;
+}
+
+/* Suggestion chips: readable on the dark panel, and they wrap, so they
+   need a real text colour rather than inheriting a light one. */
+.spg-root.spg-root .spg-chip,
+.spg-root.spg-root .spg-chip:focus,
+.spg-root.spg-root .spg-chip:active {
+	background: var(--spg-surface) !important;
+	color: var(--spg-ink) !important;
+	border: 1px solid var(--spg-line-2) !important;
+}
+
+.spg-root.spg-root .spg-chip:hover {
+	background: var(--spg-surface-2) !important;
+	border-color: var(--spg-accent) !important;
+	color: var(--spg-ink) !important;
+}
+
+/* The AI action is a second primary: same gradient as Copy, so the two
+   loud controls on the page are the two that actually do something. */
+.spg-root.spg-root .spg-btn-ai,
+.spg-root.spg-root .spg-btn-ai:focus,
+.spg-root.spg-root .spg-btn-ai:active,
+.spg-root.spg-root .spg-btn-ai:disabled:hover {
+	background: var(--spg-grad) !important;
+	border: 0 !important;
+	color: var(--spg-accent-ink) !important;
+	font-weight: 700 !important;
+	box-shadow: 0 8px 26px rgba(255, 95, 126, 0.24) !important;
+}
+
+.spg-root.spg-root .spg-btn-ai:hover {
+	background: var(--spg-grad) !important;
+	color: var(--spg-accent-ink) !important;
+	filter: brightness(1.05);
+}
+
+.spg-root.spg-root .spg-btn-ai:disabled { opacity: 0.45 !important; filter: none; }
+
+/* `--spg-card` is not a token this file defines, so these buttons had no
+   background at all. */
+.spg-root.spg-root .spg-ai-option {
+	background: var(--spg-panel) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 14px !important;
+	color: var(--spg-ink) !important;
+}
+
+.spg-root.spg-root .spg-ai-option:hover,
+.spg-root.spg-root .spg-ai-option:focus-visible {
+	border-color: var(--spg-accent) !important;
+	background: var(--spg-surface-2) !important;
+}
+
+.spg-root.spg-root .spg-ai-option strong { color: var(--spg-faint) !important; letter-spacing: 1.1px !important; }
+.spg-root.spg-root .spg-ai-option span { color: var(--spg-muted) !important; }
+
+/* The × that clears a field sat on --spg-bg, which is now the page
+   ground and vanished against the field behind it. */
+.spg-root.spg-root .spg-erase {
+	background: var(--spg-surface-2) !important;
+	border: 1px solid var(--spg-line-2) !important;
+	color: var(--spg-ink) !important;
+}
+
+.spg-root.spg-root .spg-erase:hover {
+	background: rgba(255, 107, 107, 0.16) !important;
+	border-color: rgba(255, 107, 107, 0.5) !important;
+	color: var(--spg-err) !important;
+}
+
+/* ---- Anything still carrying a light background ---------------------
+ *
+ * A catch-all for the remaining light literals scattered through the
+ * older sections, so nothing is left as dark text on a pale panel.
+ * -------------------------------------------------------------------- */
+
+.spg-root.spg-root .spg-box,
+.spg-root.spg-root .spg-fixed,
+.spg-root.spg-root .spg-ready,
+.spg-root.spg-root .spg-prefix,
+.spg-root.spg-root .spg-saved-item,
+.spg-root.spg-root .spg-setups,
+.spg-root.spg-root .spg-acc {
+	background: var(--spg-surface) !important;
+	border-color: var(--spg-line) !important;
+	color: var(--spg-ink) !important;
+}
+
+.spg-root.spg-root .spg-saved-empty,
+.spg-root.spg-root .spg-setups-lead,
+.spg-root.spg-root .spg-mode-lead { color: var(--spg-muted) !important; }
+
+/* ---- Corrections, second pass --------------------------------------
+ *
+ * Two faults, both mine.
+ *
+ * 1. The catch-all in the block above gave a pale surface to several
+ *    wrappers, including `.spg-acc`, which is a layout container rather
+ *    than a panel. That painted a light square band behind rows like
+ *    "PIECE 1" and "CHAPTER LINE" — a box floating inside the card
+ *    instead of belonging to it.
+ *
+ *    The underlying mistake was directional: on a dark interface a
+ *    recessed block has to be DARKER than the card it sits in, not
+ *    lighter. Lighter reads as something stuck on top. Everything that
+ *    is genuinely inset is now darker, and the pure wrappers carry no
+ *    background at all.
+ *
+ * 2. `.spg-mode.is-active` paints --spg-ink with `color: #ffffff`. That
+ *    token is near-white now, so the selected tab was white on white —
+ *    the same trap as the segmented pills, on a class I missed.
+ * -------------------------------------------------------------------- */
+
+/* Wrappers: no surface of their own. */
+.spg-root.spg-root .spg-acc,
+.spg-root.spg-root .spg-acc-head,
+.spg-root.spg-root .spg-field,
+.spg-root.spg-root .spg-color,
+.spg-root.spg-root .spg-color-row,
+.spg-root.spg-root .spg-swatch-group,
+.spg-root.spg-root .spg-swatches {
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+}
+
+/* Genuinely inset blocks: darker than the card, with a hairline. */
+.spg-root.spg-root .spg-fixed,
+.spg-root.spg-root .spg-ready,
+.spg-root.spg-root .spg-box,
+.spg-root.spg-root .spg-locked,
+.spg-root.spg-root .spg-mode-lead {
+	background: rgba(0, 0, 0, 0.26) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 12px !important;
+	color: var(--spg-muted) !important;
+}
+
+.spg-root.spg-root .spg-lockbox {
+	background: rgba(0, 0, 0, 0.26) !important;
+	border: 1px dashed var(--spg-line-2) !important;
+	border-radius: 12px !important;
+	color: var(--spg-muted) !important;
+}
+
+/* Fields that render as a composed row rather than a bare input. */
+.spg-root.spg-root .spg-prefix,
+.spg-root.spg-root .spg-saved-item {
+	background: var(--spg-surface) !important;
+	border: 1px solid var(--spg-line) !important;
+	border-radius: 12px !important;
+	color: var(--spg-ink) !important;
+}
+
+.spg-root.spg-root .spg-prefix span,
+.spg-root.spg-root .spg-prefix .spg-suffix {
+	background: transparent !important;
+	color: var(--spg-faint) !important;
+	border-color: var(--spg-line) !important;
+}
+
+/* The selected tab. */
+.spg-root.spg-root .spg-mode.is-active,
+.spg-root.spg-root .spg-mode.is-active:hover {
+	background: var(--spg-ink) !important;
+	color: #0d0d0f !important;
+	font-weight: 650 !important;
+}
+
+.spg-root.spg-root .spg-mode:hover {
+	background: var(--spg-surface-2) !important;
+	color: var(--spg-ink) !important;
+}
+
+.spg-root.spg-root .spg-modes {
+	background: var(--spg-surface) !important;
+	border: 1px solid var(--spg-line) !important;
+}
+
+/* The tick box was a white square. Unchecked it should read as an empty
+   field; checked it takes the brand coral. */
+.spg-root.spg-root .spg-check input[type="checkbox"] {
+	background: var(--spg-surface) !important;
+	border: 1.5px solid var(--spg-line-2) !important;
+}
+
+.spg-root.spg-root .spg-check input[type="checkbox"]:checked {
+	background: #ff6f5e !important;
+	border-color: #ff6f5e !important;
+}
+
+.spg-root.spg-root .spg-check input[type="checkbox"]::before {
+	box-shadow: inset 1em 1em #140709 !important;
+	background: #140709 !important;
+}
+
+/* Fields sitting on the AI panel picked up its warm tint through their
+   translucent background. Solid, so they read as fields. */
+.spg-root.spg-root .spg-ai input[type="text"],
+.spg-root.spg-root .spg-ai textarea,
+.spg-root.spg-root .spg-ai-inline input[type="text"],
+.spg-root.spg-root .spg-ai-inline textarea {
+	background: rgba(0, 0, 0, 0.34) !important;
+	border-color: var(--spg-line-2) !important;
+}
+
+/* The "always added" heading inside an inset block. */
+.spg-root.spg-root .spg-lock,
+.spg-root.spg-root .spg-lockbox > summary { color: var(--spg-faint) !important; }
